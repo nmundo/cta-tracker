@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { getTrainTimes } from './trains.remote';
 
-	type TrainTrackerResponse = {
+	type TrainData = {
 		tmst: string;
 		errCd: string;
 		errNm: number;
@@ -39,8 +39,8 @@
 		Y: { name: 'Yellow', hex: '#DBD56E' }
 	};
 
-	let mapId = $state('44211');
-	let trainData = $state();
+	let mapId = $state('41220');
+	let trainData: TrainData | null = $state(null);
 
 	const updateTimes = async () => {
 		fetch(`/api/?mapid=${mapId}`)
