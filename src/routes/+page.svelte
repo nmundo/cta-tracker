@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { getTrainTimes } from './trains.remote';
+
 	type TrainTrackerResponse = {
 		tmst: string;
 		errCd: string;
@@ -37,14 +39,16 @@
 		Y: { name: 'Yellow', hex: '#DBD56E' }
 	};
 
-	let mapId = $state('');
-	let trainData: TrainTrackerResponse | null = $state(null);
+	let mapId = $state('44211');
+	let trainData = $state();
 
-	const updateTimes = () => {
+	const updateTimes = async () => {
 		fetch(`/api/?mapid=${mapId}`)
 			.then((r) => r.json())
 			.then(({ ctatt }) => (trainData = ctatt))
 			.catch((e) => console.log(e));
+
+		trainData = await getTrainTimes(mapId);
 	};
 
 	const calcTimeDelta = (arrivalTime: string) => {
@@ -57,6 +61,7 @@
 
 <input type="text" class="input" bind:value={mapId} />
 <button class="btn" onclick={() => updateTimes()}>Submit</button>
+<div>Favorites</div>
 {#if trainData}
 	{#if trainData.errNm}
 		<div>{trainData.errNm}</div>
