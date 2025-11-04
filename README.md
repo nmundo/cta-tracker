@@ -4,8 +4,9 @@ Basic side project to get familiar with Svelte. Simple app for checking upcoming
 
 ### Feature List
 
--[x] Show upcoming times for trains
--[] Geolocation
--[] Favorites
--[] Search for stations
--[] Bus stops
+- [x] Show upcoming times for trains
+- [x] Remote functions
+- [] Geolocation
+- [] Favorites
+- [] Search for stations
+- [] Bus stops
