@@ -1,60 +1,61 @@
 type TrainTrackerResponse = {
 	ctatt: {
-		tmst: string;
-		errCd: string;
-		errNm: number;
+		tmst: string
+		errCd: string
+		errNm: number
 		eta: {
-			staId: string;
-			stpId: string;
-			staNm: string;
-			stpDe: string;
-			rn: string;
-			rt: 'Red' | 'Blue' | 'Brn' | 'G' | 'Org' | 'P' | 'Pink' | 'Y';
-			destSt: string;
-			destNm: string;
-			trDr: string;
-			prdt: string;
-			arrT: string;
-			isApp: string;
-			isSch: string;
-			isDly: string;
-			isFlt: string;
-			flags: null;
-			lat: string;
-			lon: string;
-			heading: string;
-		}[];
-	};
-};
+			staId: string
+			stpId: string
+			staNm: string
+			stpDe: string
+			rn: string
+			rt: 'Red' | 'Blue' | 'Brn' | 'G' | 'Org' | 'P' | 'Pink' | 'Y'
+			destSt: string
+			destNm: string
+			trDr: string
+			prdt: string
+			arrT: string
+			isApp: string
+			isSch: string
+			isDly: string
+			isFlt: string
+			flags: null
+			lat: string
+			lon: string
+			heading: string
+		}[]
+	}
+}
 
 type TrainData = {
-	tmst: string;
-	errCd: string;
-	errNm: number;
+	tmst: string
+	errCd: string
+	errNm: number
 	eta: {
-		staId: string;
-		stpId: string;
-		staNm: string;
-		stpDe: string;
-		rn: string;
-		rt: 'Red' | 'Blue' | 'Brn' | 'G' | 'Org' | 'P' | 'Pink' | 'Y';
-		destSt: string;
-		destNm: string;
-		trDr: string;
-		prdt: string;
-		arrT: string;
-		isApp: string;
-		isSch: string;
-		isDly: string;
-		isFlt: string;
-		flags: null;
-		lat: string;
-		lon: string;
-		heading: string;
-	}[];
-};
+		staId: string
+		stpId: string
+		staNm: string
+		stpDe: string
+		rn: string
+		rt: 'Red' | 'Blue' | 'Brn' | 'G' | 'Org' | 'P' | 'Pink' | 'Y'
+		destSt: string
+		destNm: string
+		trDr: string
+		prdt: string
+		arrT: string
+		isApp: string
+		isSch: string
+		isDly: string
+		isFlt: string
+		flags: null
+		lat: string
+		lon: string
+		heading: string
+	}[]
+}
 
 type StationInfo = {
-	staId: string;
-	staNm: string;
-};
+	staId: string
+	staNm: string
+	lines: string[]
+}
