@@ -12,7 +12,7 @@ type TrainTrackerResponse = {
 			staNm: string;
 			stpDe: string;
 			rn: string;
-			rt: 'Red' | 'Blue' | 'Brn' | 'G' | 'Org' | 'P' | 'Pink' | 'Y' | 'Pexp';
+			rt: 'Red' | 'Blue' | 'Brn' | 'G' | 'Org' | 'P' | 'Pink' | 'Y';
 			destSt: string;
 			destNm: string;
 			trDr: string;
