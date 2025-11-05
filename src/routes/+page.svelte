@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import { getTrainTimes } from './trains.remote';
 
 	type TrainData = {
@@ -11,7 +12,7 @@
 			staNm: string;
 			stpDe: string;
 			rn: string;
-			rt: 'Red' | 'Blue' | 'Brn' | 'G' | 'Org' | 'P' | 'Pink' | 'Y' | 'Pexp';
+			rt: 'Red' | 'Blue' | 'Brn' | 'G' | 'Org' | 'P' | 'Pink' | 'Y';
 			destSt: string;
 			destNm: string;
 			trDr: string;
@@ -28,6 +29,11 @@
 		}[];
 	};
 
+	type StationInfo = {
+		staId: string;
+		staNm: string;
+	};
+
 	const LINES = {
 		Red: { name: 'Red', hex: '#FF4242' },
 		Blue: { name: 'Blue', hex: '#2D93AD' },
@@ -41,13 +47,32 @@
 
 	let mapId = $state('41220');
 	let trainData: TrainData | null = $state(null);
+	let favorites = $state<StationInfo[]>(
+		browser && JSON.parse(localStorage.getItem('favorites') || '[]')
+	);
+
+	$effect(() => {
+		if (browser) {
+			localStorage.setItem('favorites', JSON.stringify(favorites));
+		}
+	});
+
+	const getFavorites = () => {
+		if (browser) {
+			const favs = localStorage.getItem('favorites');
+			if (favs) {
+				favorites = JSON.parse(favs);
+			}
+		}
+	};
+
+	const addFavorite = (station: StationInfo) => {
+		if (!favorites.find((fav) => fav.staId === station.staId)) {
+			favorites = [...favorites, station];
+		}
+	};
 
 	const updateTimes = async () => {
-		fetch(`/api/?mapid=${mapId}`)
-			.then((r) => r.json())
-			.then(({ ctatt }) => (trainData = ctatt))
-			.catch((e) => console.log(e));
-
 		trainData = await getTrainTimes(mapId);
 	};
 
@@ -62,14 +87,36 @@
 <input type="text" class="input" bind:value={mapId} />
 <button class="btn" onclick={() => updateTimes()}>Submit</button>
 <div>Favorites</div>
+<ul>
+	{#each favorites as { staId, staNm }}
+		<li>
+			<button
+				class="btn btn-ghost"
+				onclick={() => {
+					mapId = staId;
+					updateTimes();
+				}}
+			>
+				{staNm}
+			</button>
+		</li>
+	{/each}
+</ul>
 {#if trainData}
 	{#if trainData.errNm}
 		<div>{trainData.errNm}</div>
 	{:else}
+		<div>
+			Upcoming trains at {trainData.eta[0].staNm}
+			<button
+				class="btn ml-4 btn-outline btn-sm"
+				onclick={() =>
+					addFavorite({ staId: trainData.eta[0].staId, staNm: trainData.eta[0].staNm })}
+			>
+				Add to Favorites
+			</button>
+		</div>
 		<ul class="list rounded-box bg-base-100 shadow-md">
-			<li class="p-4 pb-2 text-2xl tracking-wide opacity-60">
-				Upcoming trains at {trainData.eta[0].staNm}
-			</li>
 			{#each trainData.eta as { destNm, arrT, rt, stpDe }}
 				<li class="list-row">
 					<div>
