@@ -2,11 +2,11 @@
 
 Basic side project to get familiar with Svelte. Simple app for checking upcoming trains at a station using the CTA API.
 
-### Feature List
+### To Do List
 
 - [x] Show upcoming times for trains
 - [x] Remote functions
 - [] Geolocation
-- [] Favorites
+- [x] Favorites
 - [] Search for stations
 - [] Bus stops
