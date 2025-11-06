@@ -13,3 +13,6 @@ Basic side project to get familiar with Svelte. Simple app for checking upcoming
 - [] Clean up api response
 - [] Add UI for managing favorites
 - [] Add animations
+- [] Have station colors come from stations API not arrivals API
+- [] Delete favorites UI
+- [] Animations
