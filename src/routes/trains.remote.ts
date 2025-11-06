@@ -1,5 +1,6 @@
 import { query } from '$app/server'
 import { TRAIN_API_KEY } from '$env/static/private'
+import dummyData from '../dummyData'
 
 export const getTrainTimes = query('unchecked', async (mapid: string) => {
 	const response = await fetch(
@@ -10,8 +11,9 @@ export const getTrainTimes = query('unchecked', async (mapid: string) => {
 	return data.ctatt
 })
 
-export const getStations = query('unchecked', async () => {
-	const response = await fetch('https://data.cityofchicago.org/resource/8pix-ypme.json')
+export const getStations = query(async () => {
+	// const response = await fetch('https://data.cityofchicago.org/resource/8pix-ypme.json')
+	const response = dummyData
 
 	return response
 })
