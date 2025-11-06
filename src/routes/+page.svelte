@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { browser } from '$app/environment'
-	import { getTrainTimes } from './trains.remote'
+	import Typeahead from 'svelte-typeahead/Typeahead.svelte'
+	import { getStations, getTrainTimes } from './trains.remote'
 
-	const LINES = {
+	const LINES: Record<LineKey, { name: string; hex: string }> = {
 		Red: { name: 'Red', hex: '#C60C30' },
 		Blue: { name: 'Blue', hex: '#00A1DE' },
 		Brn: { name: 'Brown', hex: '#662233' },
@@ -12,6 +13,8 @@
 		Pink: { name: 'Pink', hex: '#E27EA6' },
 		Y: { name: 'Yellow', hex: '#F9E300' }
 	}
+
+	const trainStations = await getStations()
 
 	let mapId = $state('')
 	let trainData: TrainData | null = $state(null)
@@ -31,13 +34,15 @@
 	}
 
 	const updateTimes = async () => {
+		loading = true
 		trainData = await getTrainTimes(mapId)
+		loading = false
 	}
 
 	const getLines = () => {
 		if (!trainData) return []
 
-		const linesSet = new Set<string>()
+		const linesSet = new Set<LineKey>()
 		trainData.eta.forEach((train) => {
 			linesSet.add(train.rt)
 		})
@@ -56,8 +61,8 @@
 <div class="container mx-auto space-y-6 p-4">
 	<section class="card bg-base-200 p-4">
 		<h2 class="card-title">Favorites</h2>
-		<div class="overflow-x-auto">
-			<div class="flex flex-nowrap space-x-3 pb-2">
+		<div class="overflow-x-auto" style="perspective: 1000px;">
+			<div class="flex flex-nowrap space-x-3 p-2">
 				{#each favorites as { staId, staNm, lines }}
 					<div class="station-container">
 						<button
@@ -77,23 +82,34 @@
 								{/each}
 							</div>
 						</button>
-						<div class="station-label">{staNm}</div>
+						<div class="station-label text-gray-500">{staNm}</div>
 					</div>
 				{/each}
 			</div>
 		</div>
 	</section>
 
-	<section class="card bg-base-200 p-4">
-		<h2 class="card-title">Find Trains</h2>
-		<div class="flex gap-2">
-			<input
-				type="text"
-				class="input-bordered input flex-grow"
-				bind:value={mapId}
-				placeholder="Enter station ID"
-			/>
-			<button class="btn btn-primary" onclick={updateTimes}>Search</button>
+	<section class="card bg-base-200 p-4 shadow-lg">
+		<h2 class="mb-4 card-title text-2xl font-bold">Find Trains</h2>
+		<div class="flex gap-3">
+			<div class="flex-grow">
+				<Typeahead
+					hideLabel
+					on:select={({ detail }) => {
+						mapId = detail.original.map_id
+					}}
+					placeholder="Search for a station..."
+					data={trainStations}
+					extract={(item) => item.station_descriptive_name}
+					class="w-full"
+				/>
+			</div>
+			<button
+				class="hover:btn-primary-focus btn min-w-24 transition-all duration-200 btn-primary"
+				onclick={updateTimes}
+			>
+				Search
+			</button>
 		</div>
 	</section>
 
@@ -109,10 +125,22 @@
 			{#if trainData.errNm}
 				<div>{trainData.errNm}</div>
 			{:else}
-				<div>
-					Upcoming trains at {trainData.eta[0].staNm}
+				<div class="mb-4 flex items-center justify-between p-2">
+					<div class="flex items-center gap-2">
+						<h3 class="text-xl font-bold">{trainData.eta[0].staNm}</h3>
+						<div class="flex gap-1">
+							{#each getLines() as line}
+								<div
+									class="h-3 w-3 rounded-full"
+									style="background-color: {LINES[line as LineKey].hex};"
+									title={LINES[line as LineKey].name}
+								></div>
+							{/each}
+						</div>
+					</div>
 					<button
-						class="btn ml-4 btn-outline btn-sm"
+						class="btn btn-sm btn-primary"
+						disabled={favorites.some((f) => f.staId === trainData.eta[0].staId)}
 						onclick={() =>
 							addFavorite({
 								staId: trainData.eta[0].staId,
@@ -120,7 +148,9 @@
 								lines: getLines()
 							})}
 					>
-						Add to Favorites
+						{favorites.some((f) => f.staId === trainData.eta[0].staId)
+							? 'Added to Favorites'
+							: '+ Add to Favorites'}
 					</button>
 				</div>
 				<ul class="list rounded-box bg-base-100 shadow-md">
