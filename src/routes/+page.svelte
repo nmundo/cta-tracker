@@ -195,7 +195,7 @@
 									<div class="text-sm text-gray-500">{stpDe}</div>
 								</div>
 								<div class="text-xl font-light">
-									{timeDelta <= 0 ? 'Arriving' : `${timeDelta} min`}
+									{timeDelta <= 0 ? 'Now' : `${timeDelta} min`}
 								</div>
 							</div>
 						</li>
