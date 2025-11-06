@@ -57,5 +57,7 @@ type TrainData = {
 type StationInfo = {
 	staId: string
 	staNm: string
-	lines: string[]
+	lines: LineKey[]
 }
+
+type LineKey = 'Red' | 'Blue' | 'Brn' | 'G' | 'Org' | 'P' | 'Pink' | 'Y'
