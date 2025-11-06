@@ -2,17 +2,7 @@
 	import { browser } from '$app/environment'
 	import Typeahead from 'svelte-typeahead/Typeahead.svelte'
 	import { getStations, getTrainTimes } from './trains.remote'
-
-	const LINES: Record<LineKey, { name: string; hex: string }> = {
-		Red: { name: 'Red', hex: '#C60C30' },
-		Blue: { name: 'Blue', hex: '#00A1DE' },
-		Brn: { name: 'Brown', hex: '#662233' },
-		G: { name: 'Green', hex: '#009B3A' },
-		Org: { name: 'Orange', hex: '#F9461C' },
-		P: { name: 'Purple', hex: '#522398' },
-		Pink: { name: 'Pink', hex: '#E27EA6' },
-		Y: { name: 'Yellow', hex: '#F9E300' }
-	}
+	import { LINES } from '../constants'
 
 	const trainStations = await getStations()
 
@@ -21,16 +11,23 @@
 	let favorites = $state<StationInfo[]>(
 		browser && JSON.parse(localStorage.getItem('favorites') || '[]')
 	)
+	let isFavorite = $derived(() =>
+		trainData ? favorites.some((f) => f.staId === trainData.eta[0].staId) : false
+	)
 	let loading = $state(false)
 
 	$effect(() => {
-		browser && localStorage.setItem('favorites', JSON.stringify(favorites))
+		localStorage.setItem('favorites', JSON.stringify(favorites))
 	})
 
 	const addFavorite = (station: StationInfo) => {
 		if (!favorites.find((fav) => fav.staId === station.staId)) {
 			favorites = [...favorites, station]
 		}
+	}
+
+	const removeFavorite = (stationId: string) => {
+		favorites = favorites.filter((fav) => fav.staId !== stationId)
 	}
 
 	const updateTimes = async () => {
@@ -90,8 +87,7 @@
 	</section>
 
 	<section class="card bg-base-200 p-4 shadow-lg">
-		<h2 class="mb-4 card-title text-2xl font-bold">Find Trains</h2>
-		<div class="flex gap-3">
+		<div class="mb-4 flex gap-3">
 			<div class="flex-grow">
 				<Typeahead
 					hideLabel
@@ -111,9 +107,7 @@
 				Search
 			</button>
 		</div>
-	</section>
 
-	<section class="card bg-base-200 p-4">
 		{#if !trainData}
 			<div class="text-center text-gray-500 italic">Enter a station to see train times.</div>
 		{:else if loading}
@@ -139,18 +133,27 @@
 						</div>
 					</div>
 					<button
-						class="btn btn-sm btn-primary"
-						disabled={favorites.some((f) => f.staId === trainData.eta[0].staId)}
-						onclick={() =>
-							addFavorite({
-								staId: trainData.eta[0].staId,
-								staNm: trainData.eta[0].staNm,
-								lines: getLines()
-							})}
+						type="button"
+						class="inline-flex items-center gap-3 rounded-full px-4 py-2 shadow-md transition-transform duration-150 hover:scale-[1.02] focus:ring-2 focus:ring-offset-2 focus:outline-none"
+						title={isFavorite() ? 'Remove from favorites' : 'Add to favorites'}
+						onclick={() => {
+							const sta = trainData.eta[0]
+							if (isFavorite()) {
+								removeFavorite(sta.staId)
+							} else {
+								addFavorite({
+									staId: sta.staId,
+									staNm: sta.staNm,
+									lines: getLines()
+								})
+							}
+						}}
 					>
-						{favorites.some((f) => f.staId === trainData.eta[0].staId)
-							? 'Added to Favorites'
-							: '+ Add to Favorites'}
+						{#if isFavorite()}
+							<span class="text-sm font-medium">Remove</span>
+						{:else}
+							<span class="text-sm font-medium">Add</span>
+						{/if}
 					</button>
 				</div>
 				<ul class="list rounded-box bg-base-100 shadow-md">

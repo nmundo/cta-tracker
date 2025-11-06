@@ -51,6 +51,7 @@ body {
 	perspective: 800px;
 	position: relative;
 	overflow: hidden;
+	cursor: pointer;
 }
 
 .station-card:hover {
@@ -91,7 +92,8 @@ body {
 
 .color-bar {
 	flex: 1;
-	border: 1px solid #e0e0e0;
+	border: 1px solid #bdbdbd;
+	border-left: 2px solid #bdbdbd;
 	border-right: 0;
 }
 
@@ -101,11 +103,11 @@ body {
 	flex-direction: column;
 }
 
-.station-colors:first-child {
+.color-bar:first-of-type {
 	border-top: 0;
 }
 
-.station-colors:last-child {
+.color-bar:last-of-type {
 	border-bottom: 0;
 }
 
