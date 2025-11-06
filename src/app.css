@@ -3,6 +3,31 @@
 @plugin '@tailwindcss/typography';
 @plugin 'daisyui';
 
+body {
+	font-family: 'Ubuntu', sans-serif;
+}
+
+:global([data-svelte-search] input) {
+	width: 100%;
+	font-size: 1.125rem;
+	padding: 0.75rem 1rem;
+	margin: 0.75rem 0;
+	border: 2px solid #e0e0e0;
+	border-radius: 50%;
+	transition: all 0.2s ease-in-out;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+:global([data-svelte-typeahead] input:focus) {
+	outline: none;
+	border-color: #522398;
+	box-shadow: 0 0 0 3px rgba(82, 35, 152, 0.1);
+}
+
+:global([data-svelte-typeahead] input:hover) {
+	border-color: #522398;
+}
+
 .station-container {
 	display: inline-block;
 	text-align: center;
@@ -14,8 +39,31 @@
 	border-radius: 6px;
 	overflow: hidden;
 	display: flex;
-	font-family: 'Arial', sans-serif;
 	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	background: rgba(255, 255, 255, 0.12);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	backdrop-filter: blur(12px) saturate(150%);
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+	transition:
+		transform 0.25s ease,
+		box-shadow 0.25s ease;
+	transform-style: preserve-3d;
+	perspective: 800px;
+	position: relative;
+	overflow: hidden;
+}
+
+.station-card:hover {
+	transform: rotateX(var(--rotate-x, 5deg)) rotateY(var(--rotate-y, -5deg)) scale(1.1);
+	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+}
+
+/* Station label text below the card */
+.station-label {
+	text-align: center;
+	font-size: 0.85rem;
+	margin-top: 0.25rem;
+	opacity: 0.75;
 }
 
 .station-info {
@@ -41,42 +89,28 @@
 	margin-top: 10px;
 }
 
+.color-bar {
+	flex: 1;
+	border: 1px solid #e0e0e0;
+	border-right: 0;
+}
+
 .station-colors {
 	width: 40%;
 	display: flex;
 	flex-direction: column;
 }
 
-.color-bar {
-	flex: 1;
+.station-colors:first-child {
+	border-top: 0;
+}
+
+.station-colors:last-child {
+	border-bottom: 0;
 }
 
 .station-label {
 	margin-top: 8px;
 	font-size: 14px;
 	font-weight: 600;
-	color: #333;
-	font-family: 'Arial', sans-serif;
-}
-
-.yellow {
-	background-color: #f9e300;
-}
-.red {
-	background-color: #c60c30;
-}
-.brown {
-	background-color: #62361b;
-}
-.purple {
-	background-color: #522398;
-}
-.orange {
-	background-color: #f9461c;
-}
-.green {
-	background-color: #009b3a;
-}
-.pink {
-	background-color: #e27ea6;
 }
