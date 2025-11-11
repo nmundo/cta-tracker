@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { browser } from '$app/environment'
-	import Typeahead from 'svelte-typeahead/Typeahead.svelte'
 	import { getStations, getTrainTimes } from './trains.remote'
-	import { LINES } from '../constants'
-	import { onMount } from 'svelte'
+	import { LINES } from '../lib/constants'
+	import StationLogo from '$lib/components/StationLogo.svelte'
+	import SearchBar from '$lib/components/SearchBar.svelte'
+	import { fade, fly } from 'svelte/transition'
 
 	const trainStations = await getStations()
 
@@ -78,41 +79,29 @@
 			{#if favorites.length === 0}
 				<div class="text-center text-gray-500 italic">Add some favorites!</div>
 			{:else}
-				<div class="relative">
+				<div class="relative overflow-hidden">
 					<div class="overflow-x-auto" onscroll={handleScroll}>
 						<div class="flex flex-nowrap space-x-3 p-2">
 							{#each favorites as { staId, staNm, lines }}
-								<div class="station-container">
-									<button
-										type="button"
-										class="station-card flex-shrink-0"
-										onclick={() => {
-											mapId = staId
-										}}
-									>
-										<div class="station-info">
-											<div class="station-letter">{staNm.charAt(0)}</div>
-										</div>
-										<div class="station-colors">
-											{#each lines as line}
-												<div class="color-bar" style="background-color: {LINES[line].hex};"></div>
-											{/each}
-										</div>
-									</button>
-									<div class="station-label text-gray-500">{staNm}</div>
-								</div>
+								<StationLogo
+									{staNm}
+									{lines}
+									changeStation={() => {
+										mapId = staId
+									}}
+								/>
 							{/each}
 						</div>
 					</div>
 
 					{#if showLeftFade}
 						<div
-							class="pointer-events-none absolute top-0 left-0 h-full w-12 bg-gradient-to-r from-base-200 to-transparent"
+							class="from-base-200 pointer-events-none absolute top-0 left-0 h-full w-12 bg-gradient-to-r to-transparent"
 						></div>
 					{/if}
 					{#if showRightFade}
 						<div
-							class="pointer-events-none absolute top-0 right-0 h-full w-12 bg-gradient-to-l from-base-200 to-transparent"
+							class="from-base-200 pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l to-transparent"
 						></div>
 					{/if}
 				</div>
@@ -123,23 +112,17 @@
 	<section class="card bg-base-200 p-4 shadow-lg">
 		<div class="mb-4 flex gap-3">
 			<div class="flex-grow">
-				<Typeahead
-					hideLabel
-					on:select={({ detail }) => {
-						mapId = detail.original.map_id
-					}}
-					placeholder="Search for a station..."
+				<SearchBar
 					data={trainStations}
-					extract={(item) => item.station_descriptive_name}
-					class="w-full"
+					onSelect={(id) => {
+						mapId = id
+					}}
 				/>
 			</div>
 		</div>
 
 		{#if !trainData}
 			<div class="text-center text-gray-500 italic">Enter a station to see arrival times.</div>
-		{:else if loading}
-			<div class="loading mx-auto loading-spinner"></div>
 		{/if}
 		{#if trainData}
 			{#if trainData.errNm}
@@ -160,7 +143,7 @@
 					</div>
 					<button
 						type="button"
-						class="inline-flex items-center gap-3 rounded-full px-4 py-2 shadow-md transition-transform duration-150 hover:scale-[1.02] focus:ring-2 focus:ring-offset-2 focus:outline-none"
+						class="favorite-btn"
 						title={isFavorite() ? 'Remove from favorites' : 'Add to favorites'}
 						onclick={() => {
 							const sta = trainData.eta[0]
@@ -182,19 +165,19 @@
 						{/if}
 					</button>
 				</div>
-				<ul class="list rounded-box bg-base-100 shadow-md">
-					{#each trainData.eta as { destNm, arrT, rt, stpDe }}
+				<ul class="list">
+					{#each trainData.eta as { destNm, arrT, rt, stpDe, rn }, i (rn + rt + arrT)}
 						{@const timeDelta = calcTimeDelta(arrT)}
-						<li class="list-row">
+						<li class="list-row" in:fly={{ y: 20, duration: 200, delay: i * 50 }} out:fade>
 							<div>
-								<div class="size-10 rounded-box" style="background-color: {LINES[rt].hex};"></div>
+								<div class="line-color" style="background-color: {LINES[rt].hex};"></div>
 							</div>
-							<div class="flex items-center justify-between">
+							<div class="flex flex-grow items-center justify-between">
 								<div>
 									<div class="font-bold">{destNm}</div>
 									<div class="text-sm text-gray-500">{stpDe}</div>
 								</div>
-								<div class="text-xl font-light">
+								<div class="text-right text-xl font-light">
 									{timeDelta <= 0 ? 'Now' : `${timeDelta} min`}
 								</div>
 							</div>
@@ -205,3 +188,48 @@
 		{/if}
 	</section>
 </div>
+
+<style>
+	/* ocus:ring-2 focus:ring-offset-2 focus:outline-none" */
+	.favorite-btn {
+		align-items: center;
+		border-radius: 9999px;
+		cursor: pointer;
+		display: inline-flex;
+		gap: 0.75rem;
+		padding: 0.5rem 1rem;
+		transition: transform 0.15s ease;
+		background: var(--card-bg);
+		border: 1px solid var(--muted-border);
+		backdrop-filter: blur(12px) saturate(150%);
+		box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+	}
+	.favorite-btn:hover {
+		transform: scale(1.02);
+	}
+	.favorite-btn:focus {
+		outline: none;
+		box-shadow:
+			0 0 0 2px var(--accent),
+			0 0 0 4px var(--accent);
+	}
+	.list {
+		box-shadow: 0 8px 24px rgba(2, 6, 23, 0.12);
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		border-radius: 24px;
+	}
+	.list-row {
+		display: flex;
+		gap: 1rem;
+		align-items: center;
+		padding: 0.75rem;
+		border-bottom: 1px solid var(--muted-border);
+	}
+	.line-color {
+		width: 40px;
+		height: 40px;
+		border-radius: 12px;
+	}
+</style>
