@@ -8,13 +8,13 @@ Basic side project to get familiar with Svelte. Simple app for checking upcoming
 - [x] Remote functions
 - [ ] Geolocation
 - [x] Favorites
-- [ ] Search for stations/autocomplete
+- [x] Search for stations/autocomplete
 - [ ] Bus stops
 - [ ] Clean up api response
-- [ ] Add UI for managing favorites
+- [x] Add UI for managing favorites
 - [ ] Add animations
 - [ ] Have station colors come from stations API not arrivals API
-- [ ] Delete favorites UI
-- [ ] Animations
+- [x] Delete favorites UI
 - [ ] a11y
-- [ ] Fix searchbar dark mode
+- [x] Fix searchbar dark mode
+- [ ]
