@@ -26,6 +26,7 @@
 	.container {
 		display: inline-block;
 		text-align: center;
+		width: 100px;
 	}
 
 	button {
