@@ -74,12 +74,12 @@
 
 <div class="container mx-auto space-y-6 p-4">
 	<section>
+		<h2 class="card-title">Favorites</h2>
 		<div class="card bg-base-200 p-4">
-			<h2 class="card-title">Favorites</h2>
 			{#if favorites.length === 0}
 				<div class="text-center text-gray-500 italic">Add some favorites!</div>
 			{:else}
-				<div class="relative overflow-hidden">
+				<div class="relative">
 					<div class="overflow-x-auto" onscroll={handleScroll}>
 						<div class="flex flex-nowrap space-x-3 p-2">
 							{#each favorites as { staId, staNm, lines }}
@@ -96,12 +96,12 @@
 
 					{#if showLeftFade}
 						<div
-							class="from-base-200 pointer-events-none absolute top-0 left-0 h-full w-12 bg-gradient-to-r to-transparent"
+							class="pointer-events-none absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-white/80 to-transparent dark:from-gray-900/80"
 						></div>
 					{/if}
 					{#if showRightFade}
 						<div
-							class="from-base-200 pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l to-transparent"
+							class="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-white/80 to-transparent dark:from-gray-900/80"
 						></div>
 					{/if}
 				</div>
@@ -109,88 +109,90 @@
 		</div>
 	</section>
 
-	<section class="card bg-base-200 p-4 shadow-lg">
-		<div class="mb-4 flex gap-3">
-			<div class="flex-grow">
-				<SearchBar
-					data={trainStations}
-					onSelect={(id) => {
-						mapId = id
-					}}
-				/>
-			</div>
-		</div>
-
-		{#if !trainData}
-			<div class="text-center text-gray-500 italic">Enter a station to see arrival times.</div>
-		{/if}
-		{#if trainData}
-			{#if trainData.errNm}
-				<div class="text-error">Error: {trainData.errNm}</div>
-			{:else}
-				<div class="mb-4 flex items-center justify-between p-2">
-					<div class="flex items-center gap-2">
-						<h3 class="text-xl font-bold">{trainData.eta[0].staNm}</h3>
-						<div class="flex gap-1">
-							{#each getLines() as line}
-								<div
-									class="h-3 w-3 rounded-full"
-									style="background-color: {LINES[line as LineKey].hex};"
-									title={LINES[line as LineKey].name}
-								></div>
-							{/each}
-						</div>
-					</div>
-					<button
-						type="button"
-						class="favorite-btn"
-						title={isFavorite() ? 'Remove from favorites' : 'Add to favorites'}
-						onclick={() => {
-							const sta = trainData.eta[0]
-							if (isFavorite()) {
-								removeFavorite(sta.staId)
-							} else {
-								addFavorite({
-									staId: sta.staId,
-									staNm: sta.staNm,
-									lines: getLines()
-								})
-							}
+	<section>
+		<h2 class="card-title">Arrivals</h2>
+		<div class="card bg-base-200 p-4 shadow-lg">
+			<div class="mb-4 flex gap-3">
+				<div class="flex-grow">
+					<SearchBar
+						data={trainStations}
+						onSelect={(id) => {
+							mapId = id
 						}}
-					>
-						{#if isFavorite()}
-							<span class="text-sm font-medium">Remove</span>
-						{:else}
-							<span class="text-sm font-medium">Add</span>
-						{/if}
-					</button>
+					/>
 				</div>
-				<ul class="list">
-					{#each trainData.eta as { destNm, arrT, rt, stpDe, rn }, i (rn + rt + arrT)}
-						{@const timeDelta = calcTimeDelta(arrT)}
-						<li class="list-row" in:fly={{ y: 20, duration: 200, delay: i * 50 }} out:fade>
-							<div>
-								<div class="line-color" style="background-color: {LINES[rt].hex};"></div>
-							</div>
-							<div class="flex flex-grow items-center justify-between">
-								<div>
-									<div class="font-bold">{destNm}</div>
-									<div class="text-sm text-gray-500">{stpDe}</div>
-								</div>
-								<div class="text-right text-xl font-light">
-									{timeDelta <= 0 ? 'Now' : `${timeDelta} min`}
-								</div>
-							</div>
-						</li>
-					{/each}
-				</ul>
+			</div>
+
+			{#if !trainData}
+				<div class="text-center text-gray-500 italic">Enter a station to see arrival times.</div>
 			{/if}
-		{/if}
+			{#if trainData}
+				{#if trainData.errNm}
+					<div class="text-error">Error: {trainData.errNm}</div>
+				{:else}
+					<div class="mb-4 flex items-center justify-between p-2">
+						<div class="flex items-center gap-2">
+							<h3 class="text-xl font-bold">{trainData.eta[0].staNm}</h3>
+							<div class="flex gap-1">
+								{#each getLines() as line}
+									<div
+										class="h-3 w-3 rounded-full"
+										style="background-color: {LINES[line as LineKey].hex};"
+										title={LINES[line as LineKey].name}
+									></div>
+								{/each}
+							</div>
+						</div>
+						<button
+							type="button"
+							class="favorite-btn"
+							title={isFavorite() ? 'Remove from favorites' : 'Add to favorites'}
+							onclick={() => {
+								const sta = trainData.eta[0]
+								if (isFavorite()) {
+									removeFavorite(sta.staId)
+								} else {
+									addFavorite({
+										staId: sta.staId,
+										staNm: sta.staNm,
+										lines: getLines()
+									})
+								}
+							}}
+						>
+							{#if isFavorite()}
+								<span>Remove</span>
+							{:else}
+								<span>Add</span>
+							{/if}
+						</button>
+					</div>
+					<ul class="list">
+						{#each trainData.eta as { destNm, arrT, rt, stpDe, rn }, i (rn + rt + arrT)}
+							{@const timeDelta = calcTimeDelta(arrT)}
+							<li class="list-row" in:fly={{ y: 20, duration: 200, delay: i * 50 }} out:fade>
+								<div>
+									<div class="line-color" style="background-color: {LINES[rt].hex};"></div>
+								</div>
+								<div class="flex flex-grow items-center justify-between">
+									<div>
+										<div class="font-bold">{destNm}</div>
+										<div class="text-sm text-gray-500">{stpDe}</div>
+									</div>
+									<div class="text-right text-xl font-light">
+										{timeDelta <= 0 ? 'Now' : `${timeDelta} min`}
+									</div>
+								</div>
+							</li>
+						{/each}
+					</ul>
+				{/if}
+			{/if}
+		</div>
 	</section>
 </div>
 
 <style>
-	/* ocus:ring-2 focus:ring-offset-2 focus:outline-none" */
 	.favorite-btn {
 		align-items: center;
 		border-radius: 9999px;
