@@ -61,3 +61,30 @@ type StationInfo = {
 }
 
 type LineKey = 'Red' | 'Blue' | 'Brn' | 'G' | 'Org' | 'P' | 'Pink' | 'Y'
+
+type Location = {
+	latitude: string
+	longitude: string
+	human_address: string // stringified JSON
+}
+
+type StationStop = {
+	stop_id: string
+	direction_id: string
+	stop_name: string
+	station_name: string
+	station_descriptive_name: string
+	map_id: string
+	ada: boolean
+	red: boolean
+	blue: boolean
+	g: boolean
+	brn: boolean
+	p: boolean
+	pexp: boolean
+	y: boolean
+	pnk: boolean
+	o: boolean
+	location: Location
+	[key: string]: unknown
+}
