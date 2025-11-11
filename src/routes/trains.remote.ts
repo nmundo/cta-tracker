@@ -11,7 +11,7 @@ export const getTrainTimes = query('unchecked', async (mapid: string) => {
 	return data.ctatt
 })
 
-export const getStations = query(async () => {
+export const getStations = query(async (): Promise<StationStop[]> => {
 	// const response = await fetch('https://data.cityofchicago.org/resource/8pix-ypme.json')
 	const response = dummyData
 
