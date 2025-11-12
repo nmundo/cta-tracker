@@ -81,7 +81,7 @@
 			{:else}
 				<div class="relative">
 					<div class="overflow-x-auto" onscroll={handleScroll}>
-						<div class="flex flex-nowrap space-x-3 p-2">
+						<div class="favorites-container flex flex-nowrap space-x-3 p-2">
 							{#each favorites as { staId, staNm, lines }}
 								<StationLogo
 									{staNm}
