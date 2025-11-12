@@ -5,6 +5,7 @@
 	import StationLogo from '$lib/components/StationLogo.svelte'
 	import SearchBar from '$lib/components/SearchBar.svelte'
 	import { fade, fly } from 'svelte/transition'
+	import FullStationLogo from '$lib/components/FullStationLogo.svelte'
 
 	const trainStations = await getStations()
 
@@ -81,7 +82,7 @@
 			{:else}
 				<div class="relative">
 					<div class="overflow-x-auto" onscroll={handleScroll}>
-						<div class="flex flex-nowrap space-x-3 p-2">
+						<div class="favorites-container flex flex-nowrap space-x-3 p-2">
 							{#each favorites as { staId, staNm, lines }}
 								<StationLogo
 									{staNm}
@@ -130,10 +131,9 @@
 				{#if trainData.errNm}
 					<div class="text-error">Error: {trainData.errNm}</div>
 				{:else}
-					<div class="mb-4 flex items-center justify-between p-2">
-						<div class="flex items-center gap-2">
-							<h3 class="text-xl font-bold">{trainData.eta[0].staNm}</h3>
-							<div class="flex gap-1">
+					<div class="header">
+						<FullStationLogo lines={getLines()} staNm={trainData.eta[0].staNm} />
+						<!-- <div class="flex gap-1">
 								{#each getLines() as line}
 									<div
 										class="h-3 w-3 rounded-full"
@@ -141,8 +141,7 @@
 										title={LINES[line as LineKey].name}
 									></div>
 								{/each}
-							</div>
-						</div>
+							</div> -->
 						<button
 							type="button"
 							class="favorite-btn"
@@ -161,9 +160,37 @@
 							}}
 						>
 							{#if isFavorite()}
-								<span>Remove</span>
+								<!-- Crossed out bookmark -->
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									fill="none"
+									viewBox="0 0 24 24"
+									stroke-width="1.5"
+									stroke="currentColor"
+									class="size-6"
+								>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										d="m3 3 1.664 1.664M21 21l-1.5-1.5m-5.485-1.242L12 17.25 4.5 21V8.742m.164-4.078a2.15 2.15 0 0 1 1.743-1.342 48.507 48.507 0 0 1 11.186 0c1.1.128 1.907 1.077 1.907 2.185V19.5M4.664 4.664 19.5 19.5"
+									/>
+								</svg>
 							{:else}
-								<span>Add</span>
+								<!-- bookmark outline -->
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									fill="none"
+									viewBox="0 0 24 24"
+									stroke-width="1.5"
+									stroke="currentColor"
+									class="size-6"
+								>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"
+									/>
+								</svg>
 							{/if}
 						</button>
 					</div>
@@ -177,7 +204,6 @@
 								<div class="flex flex-grow items-center justify-between">
 									<div>
 										<div class="font-bold">{destNm}</div>
-										<div class="text-sm text-gray-500">{stpDe}</div>
 									</div>
 									<div class="text-right text-xl font-light">
 										{timeDelta <= 0 ? 'Now' : `${timeDelta} min`}
@@ -193,6 +219,11 @@
 </div>
 
 <style>
+	.header {
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: 20px;
+	}
 	.favorite-btn {
 		align-items: center;
 		border-radius: 9999px;
@@ -207,13 +238,16 @@
 		box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 	}
 	.favorite-btn:hover {
-		transform: scale(1.02);
+		transform: scale(1.05);
 	}
 	.favorite-btn:focus {
 		outline: none;
 		box-shadow:
 			0 0 0 2px var(--accent),
 			0 0 0 4px var(--accent);
+	}
+	.favorite-btn:active {
+		transform: scale(0.95);
 	}
 	.list {
 		box-shadow: 0 8px 24px rgba(2, 6, 23, 0.12);
