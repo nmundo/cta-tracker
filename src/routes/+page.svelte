@@ -238,13 +238,16 @@
 		box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 	}
 	.favorite-btn:hover {
-		transform: scale(1.02);
+		transform: scale(1.05);
 	}
 	.favorite-btn:focus {
 		outline: none;
 		box-shadow:
 			0 0 0 2px var(--accent),
 			0 0 0 4px var(--accent);
+	}
+	.favorite-btn:active {
+		transform: scale(0.95);
 	}
 	.list {
 		box-shadow: 0 8px 24px rgba(2, 6, 23, 0.12);
