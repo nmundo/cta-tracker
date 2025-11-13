@@ -60,7 +60,7 @@ type StationInfo = {
 	lines: LineKey[]
 }
 
-type LineKey = 'Red' | 'Blue' | 'Brn' | 'G' | 'Org' | 'P' | 'Pink' | 'Y'
+type LineKey = 'Red' | 'Blue' | 'Brn' | 'G' | 'Org' | 'P' | 'Pink' | 'Y' | 'Pexp'
 
 type Location = {
 	latitude: string
