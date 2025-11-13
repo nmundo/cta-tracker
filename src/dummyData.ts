@@ -1,4 +1,4 @@
-export default [
+const stations: StationApiResponse[] = [
 	{
 		stop_id: '30162',
 		direction_id: 'W',
@@ -8298,3 +8298,5 @@ export default [
 		':@computed_region_43wa_7qmu': '39'
 	}
 ]
+
+export default stations

@@ -60,15 +60,15 @@ type StationInfo = {
 	lines: LineKey[]
 }
 
-type LineKey = 'Red' | 'Blue' | 'Brn' | 'G' | 'Org' | 'P' | 'Pink' | 'Y'
+type LineKey = 'Red' | 'Blue' | 'Brn' | 'G' | 'Org' | 'P' | 'Pink' | 'Y' | 'Pexp'
 
-type Location = {
+type StationLocation = {
 	latitude: string
 	longitude: string
 	human_address: string // stringified JSON
 }
 
-type StationStop = {
+type StationApiResponse = {
 	stop_id: string
 	direction_id: string
 	stop_name: string
@@ -85,6 +85,18 @@ type StationStop = {
 	y: boolean
 	pnk: boolean
 	o: boolean
-	location: Location
+	location: StationLocation
 	[key: string]: unknown
+}
+
+type StationStop = {
+	stop_id: string
+	direction_id: string
+	stop_name: string
+	station_name: string
+	station_descriptive_name: string
+	map_id: string
+	ada: boolean
+	lines: Set<LineKey>
+	location: StationLocation
 }

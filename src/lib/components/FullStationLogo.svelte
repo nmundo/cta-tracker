@@ -9,7 +9,7 @@
 		<div class="name">{staNm}</div>
 	</div>
 	<div class="colors">
-		{#each lines as line}
+		{#each lines as line (line)}
 			<div class="color-bar" style="background-color: {LINES[line].hex};"></div>
 		{/each}
 	</div>

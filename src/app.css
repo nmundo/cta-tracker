@@ -7,8 +7,8 @@
 	--placeholder: #9ca3af;
 	--card-bg: rgba(255, 255, 255, 0.02);
 	--muted-border: rgba(0, 0, 0, 0.06);
-	--accent: #522398;
-	--glass-bg: rgba(255, 255, 255, 0.06);
+	--accent: #28587b;
+	--glass-bg: rgba(255, 255, 255, 0.1);
 	--search-bg: rgba(30, 30, 30, 0.04);
 	--station-info-bg: #565a5c;
 	--station-letter-color: #ffffff;
@@ -24,7 +24,7 @@
 		--placeholder: rgba(255, 255, 255, 0.6);
 		--card-bg: rgba(255, 255, 255, 0.03);
 		--muted-border: rgba(255, 255, 255, 0.03);
-		--accent: #d6c3ff;
+		--accent: #28587b;
 		--glass-bg: rgba(255, 255, 255, 0.04);
 		--search-bg: rgba(255, 255, 255, 0.03);
 		--title: #90969d;
@@ -39,7 +39,7 @@
 	--placeholder: rgba(255, 255, 255, 0.6);
 	--card-bg: rgba(255, 255, 255, 0.03);
 	--muted-border: rgba(255, 255, 255, 0.03);
-	--accent: #d6c3ff;
+	--accent: #28587b;
 	--glass-bg: rgba(255, 255, 255, 0.04);
 	--search-bg: rgba(255, 255, 255, 0.03);
 	--title: #90969d;

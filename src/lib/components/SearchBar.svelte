@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { LINES } from '$lib/constants'
+
 	const { data, onSelect }: { data: StationStop[]; onSelect: (item: string) => void } = $props()
 
 	let query = $state('')
@@ -9,11 +11,12 @@
 	let suggestionsTop = $state(0)
 	let suggestionsLeft = $state(0)
 	let containerRef: HTMLDivElement | undefined = $state()
+	let inputRef: HTMLInputElement | undefined = $state()
 
 	const updateDropdownPosition = () => {
 		if (containerRef) {
 			const rect = containerRef.getBoundingClientRect()
-			suggestionsTop = rect.bottom + window.scrollY + 8 // 8px gap
+			suggestionsTop = rect.bottom + window.scrollY + 8
 			suggestionsLeft = rect.left + window.scrollX
 		}
 	}
@@ -27,6 +30,7 @@
 			if (value.trim().length === 0) {
 				suggestions = []
 				showSuggestions = false
+				activeIndex = -1
 				return
 			}
 			suggestions = data.filter((item) =>
@@ -38,18 +42,46 @@
 	}
 
 	const handleKeydown = (e: KeyboardEvent) => {
-		if (!showSuggestions) return
-
+		// Keep focus on input and use aria-activedescendant to announce the active option.
+		// Open suggestions when ArrowDown pressed.
 		if (e.key === 'ArrowDown') {
-			activeIndex = (activeIndex + 1) % suggestions.length
+			if (!showSuggestions && suggestions.length > 0) {
+				showSuggestions = true
+				activeIndex = 0
+				e.preventDefault()
+				updateDropdownPosition()
+				return
+			}
+			if (showSuggestions && suggestions.length > 0) {
+				activeIndex = (activeIndex + 1 + suggestions.length) % suggestions.length
+				e.preventDefault()
+			}
 		} else if (e.key === 'ArrowUp') {
-			activeIndex = (activeIndex - 1 + suggestions.length) % suggestions.length
+			if (showSuggestions && suggestions.length > 0) {
+				activeIndex = (activeIndex - 1 + suggestions.length) % suggestions.length
+				e.preventDefault()
+			}
+		} else if (e.key === 'Home') {
+			if (showSuggestions && suggestions.length > 0) {
+				activeIndex = 0
+				e.preventDefault()
+			}
+		} else if (e.key === 'End') {
+			if (showSuggestions && suggestions.length > 0) {
+				activeIndex = suggestions.length - 1
+				e.preventDefault()
+			}
 		} else if (e.key === 'Enter') {
-			if (activeIndex >= 0 && suggestions[activeIndex]) {
+			if (showSuggestions && activeIndex >= 0 && suggestions[activeIndex]) {
+				e.preventDefault()
 				selectSuggestion(suggestions[activeIndex])
 			}
 		} else if (e.key === 'Escape') {
-			showSuggestions = false
+			if (showSuggestions) {
+				showSuggestions = false
+				activeIndex = -1
+				e.preventDefault()
+			}
 		}
 	}
 
@@ -57,6 +89,9 @@
 		query = item.station_descriptive_name
 		showSuggestions = false
 		suggestions = []
+		activeIndex = -1
+		// Move focus back to input (helps screen reader context)
+		inputRef?.focus()
 		onSelect(item.map_id)
 	}
 
@@ -65,11 +100,19 @@
 		suggestions = []
 		showSuggestions = false
 		activeIndex = -1
+		inputRef?.focus()
 	}
 </script>
 
 <div class="search-wrapper">
-	<div class="search-container relative">
+	<div
+		class="search-container relative"
+		bind:this={containerRef}
+		onmouseenter={updateDropdownPosition}
+		role="search"
+	>
+		<label for="search-input" id="search-label" class="sr-only">Search for CTA station</label>
+
 		<svg
 			class="search-icon pointer-events-none absolute left-4"
 			xmlns="http://www.w3.org/2000/svg"
@@ -85,7 +128,9 @@
 				d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z"
 			/>
 		</svg>
+
 		<input
+			id="search-input"
 			type="text"
 			bind:value={query}
 			oninput={handleInput}
@@ -96,10 +141,15 @@
 			aria-autocomplete="list"
 			aria-controls="suggestions-list"
 			aria-expanded={showSuggestions}
+			aria-labelledby="search-label"
+			aria-haspopup="listbox"
+			aria-activedescendant={activeIndex >= 0 && suggestions[activeIndex]
+				? `suggestion-${suggestions[activeIndex].map_id}`
+				: undefined}
 			role="combobox"
-			bind:this={containerRef}
-			onmouseenter={updateDropdownPosition}
+			bind:this={inputRef}
 		/>
+
 		{#if query.length > 0}
 			<button
 				type="button"
@@ -126,24 +176,60 @@
 			id="suggestions-list"
 			class="suggestions-list"
 			role="listbox"
+			aria-labelledby="search-label"
 			style="top: {suggestionsTop}px; left: {suggestionsLeft}px; width: {containerRef?.offsetWidth ||
 				'auto'}px"
 		>
-			{#each suggestions as suggestion, i}
+			{#each suggestions as suggestion, i (suggestion.map_id)}
 				<li
+					id={'suggestion-' + suggestion.map_id}
 					class="suggestion-item {i === activeIndex ? 'active' : ''}"
-					onclick={() => selectSuggestion(suggestion)}
+					onmousedown={() => selectSuggestion(suggestion)}
+					onmouseover={() => (activeIndex = i)}
+					onfocus={() => (activeIndex = i)}
 					role="option"
 					aria-selected={i === activeIndex}
 				>
-					{suggestion.station_descriptive_name}
+					<div class="flex w-full items-center justify-between">
+						<span>{suggestion.station_descriptive_name}</span>
+						<div class="flex gap-1" aria-hidden="true">
+							{#each suggestion.lines as line (line)}
+								<div
+									class="h-3 w-3 rounded-full"
+									style="background-color: {LINES[line as LineKey].hex};"
+									title={LINES[line as LineKey].name}
+								></div>
+							{/each}
+						</div>
+					</div>
 				</li>
 			{/each}
 		</ul>
 	{/if}
+
+	<!-- SR-only live region for announcement of suggestions -->
+	<div class="sr-only" role="status" aria-live="polite">
+		{#if showSuggestions}
+			{suggestions.length} {suggestions.length === 1 ? 'result' : 'results'} available
+		{:else if query.length > 0}
+			No results
+		{/if}
+	</div>
 </div>
 
 <style>
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
+	}
+
 	.search-wrapper {
 		position: relative;
 		width: 100%;
@@ -159,7 +245,6 @@
 			inset 0 0 8px rgba(255 255 255 / 0.1),
 			0 4px 20px rgba(0 0 0 / 0.15);
 		backdrop-filter: blur(14px);
-		-webkit-backdrop-filter: blur(14px);
 		transition:
 			transform 0.3s ease,
 			box-shadow 0.3s ease;
@@ -191,6 +276,7 @@
 
 	.glass-input:focus {
 		color: var(--input-text);
+		outline: 2px solid var(--accent);
 	}
 
 	.search-icon {
@@ -230,12 +316,11 @@
 		top: auto;
 		left: 0;
 		width: 100%;
-		max-height: 15rem;
+		max-height: 20rem;
 		overflow-y: auto;
 		border-radius: 1rem;
 		background: var(--glass-bg);
-		backdrop-filter: blur(14px);
-		-webkit-backdrop-filter: blur(14px);
+		backdrop-filter: blur(16px);
 		border: 1px solid var(--muted-border);
 		box-shadow: 0 8px 32px rgba(0 0 0 / 0.2);
 		animation: fadeIn 0.25s ease forwards;
@@ -243,31 +328,26 @@
 		scrollbar-color: rgba(255 255 255 / 0.3) transparent;
 	}
 
-	.suggestions-list::-webkit-scrollbar {
-		width: 8px;
-	}
-	.suggestions-list::-webkit-scrollbar-thumb {
-		background-color: rgba(255 255 255 / 0.3);
-		border-radius: 4px;
-	}
-
 	.suggestion-item {
+		margin: 0.25rem;
 		padding: 0.6rem 1.5rem;
 		cursor: pointer;
-		border-radius: 0.5rem;
+		border-radius: 0.9rem;
 		transition:
 			background-color 0.3s ease,
 			box-shadow 0.3s ease,
 			color 0.3s ease;
 		color: var(--text);
 		font-weight: 500;
+		border: 1px solid rgba(0, 0, 0, 0);
 	}
 
 	.suggestion-item:hover,
 	.suggestion-item.active {
-		background-color: rgba(255, 255, 255, 0.06);
+		background-color: rgba(200, 200, 200, 0.3);
 		color: var(--text);
 		box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.04);
+		border: 1px solid rgba(0, 0, 0, 0.15);
 	}
 
 	@keyframes fadeIn {
