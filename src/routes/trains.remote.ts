@@ -26,7 +26,7 @@ export const getTrainTimes = query('unchecked', async (mapId: string) => {
 export const getStations = query(async (): Promise<StationStop[]> => {
 	// const response = await fetch('https://data.cityofchicago.org/resource/8pix-ypme.json')
 
-	const getLineArray = (station: StationStop) =>
+	const getLineArray = (station: StationApiResponse) =>
 		colorMap.map((c) => (station[c.key] ? c.name : null)).filter(Boolean)
 
 	const stationMap = new Map()
