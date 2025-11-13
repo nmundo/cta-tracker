@@ -245,7 +245,6 @@
 			inset 0 0 8px rgba(255 255 255 / 0.1),
 			0 4px 20px rgba(0 0 0 / 0.15);
 		backdrop-filter: blur(14px);
-		-webkit-backdrop-filter: blur(14px);
 		transition:
 			transform 0.3s ease,
 			box-shadow 0.3s ease;
@@ -317,12 +316,11 @@
 		top: auto;
 		left: 0;
 		width: 100%;
-		max-height: 15rem;
+		max-height: 20rem;
 		overflow-y: auto;
 		border-radius: 1rem;
 		background: var(--glass-bg);
-		backdrop-filter: blur(14px);
-		-webkit-backdrop-filter: blur(14px);
+		backdrop-filter: blur(16px);
 		border: 1px solid var(--muted-border);
 		box-shadow: 0 8px 32px rgba(0 0 0 / 0.2);
 		animation: fadeIn 0.25s ease forwards;
@@ -330,31 +328,26 @@
 		scrollbar-color: rgba(255 255 255 / 0.3) transparent;
 	}
 
-	.suggestions-list::-webkit-scrollbar {
-		width: 8px;
-	}
-	.suggestions-list::-webkit-scrollbar-thumb {
-		background-color: rgba(255 255 255 / 0.3);
-		border-radius: 4px;
-	}
-
 	.suggestion-item {
+		margin: 0.25rem;
 		padding: 0.6rem 1.5rem;
 		cursor: pointer;
-		border-radius: 0.5rem;
+		border-radius: 0.9rem;
 		transition:
 			background-color 0.3s ease,
 			box-shadow 0.3s ease,
 			color 0.3s ease;
 		color: var(--text);
 		font-weight: 500;
+		border: 1px solid rgba(0, 0, 0, 0);
 	}
 
 	.suggestion-item:hover,
 	.suggestion-item.active {
-		background-color: rgba(255, 255, 255, 0.06);
+		background-color: rgba(200, 200, 200, 0.3);
 		color: var(--text);
 		box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.04);
+		border: 1px solid rgba(0, 0, 0, 0.15);
 	}
 
 	@keyframes fadeIn {
