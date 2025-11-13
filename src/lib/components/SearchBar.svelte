@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { LINES } from '$lib/constants'
+
 	const { data, onSelect }: { data: StationStop[]; onSelect: (item: string) => void } = $props()
 
 	let query = $state('')
@@ -13,7 +15,7 @@
 	const updateDropdownPosition = () => {
 		if (containerRef) {
 			const rect = containerRef.getBoundingClientRect()
-			suggestionsTop = rect.bottom + window.scrollY + 8 // 8px gap
+			suggestionsTop = rect.bottom + window.scrollY + 8
 			suggestionsLeft = rect.left + window.scrollX
 		}
 	}
@@ -129,14 +131,26 @@
 			style="top: {suggestionsTop}px; left: {suggestionsLeft}px; width: {containerRef?.offsetWidth ||
 				'auto'}px"
 		>
-			{#each suggestions as suggestion, i}
+			{#each suggestions as suggestion, i (suggestion.map_id)}
 				<li
 					class="suggestion-item {i === activeIndex ? 'active' : ''}"
 					onclick={() => selectSuggestion(suggestion)}
 					role="option"
 					aria-selected={i === activeIndex}
 				>
-					{suggestion.station_descriptive_name}
+					<div class="flex w-full items-center justify-between">
+						<span>{suggestion.station_descriptive_name}</span>
+						<div class="flex gap-1">
+							{#each suggestion.lines as line (line)}
+								{console.log(line)}
+								<div
+									class="h-3 w-3 rounded-full"
+									style="background-color: {LINES[line as LineKey].hex};"
+									title={LINES[line as LineKey].name}
+								></div>
+							{/each}
+						</div>
+					</div>
 				</li>
 			{/each}
 		</ul>
