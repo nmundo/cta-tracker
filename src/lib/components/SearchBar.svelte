@@ -11,6 +11,7 @@
 	let suggestionsTop = $state(0)
 	let suggestionsLeft = $state(0)
 	let containerRef: HTMLDivElement | undefined = $state()
+	let inputRef: HTMLInputElement | undefined = $state()
 
 	const updateDropdownPosition = () => {
 		if (containerRef) {
@@ -29,6 +30,7 @@
 			if (value.trim().length === 0) {
 				suggestions = []
 				showSuggestions = false
+				activeIndex = -1
 				return
 			}
 			suggestions = data.filter((item) =>
@@ -40,18 +42,46 @@
 	}
 
 	const handleKeydown = (e: KeyboardEvent) => {
-		if (!showSuggestions) return
-
+		// Keep focus on input and use aria-activedescendant to announce the active option.
+		// Open suggestions when ArrowDown pressed.
 		if (e.key === 'ArrowDown') {
-			activeIndex = (activeIndex + 1) % suggestions.length
+			if (!showSuggestions && suggestions.length > 0) {
+				showSuggestions = true
+				activeIndex = 0
+				e.preventDefault()
+				updateDropdownPosition()
+				return
+			}
+			if (showSuggestions && suggestions.length > 0) {
+				activeIndex = (activeIndex + 1 + suggestions.length) % suggestions.length
+				e.preventDefault()
+			}
 		} else if (e.key === 'ArrowUp') {
-			activeIndex = (activeIndex - 1 + suggestions.length) % suggestions.length
+			if (showSuggestions && suggestions.length > 0) {
+				activeIndex = (activeIndex - 1 + suggestions.length) % suggestions.length
+				e.preventDefault()
+			}
+		} else if (e.key === 'Home') {
+			if (showSuggestions && suggestions.length > 0) {
+				activeIndex = 0
+				e.preventDefault()
+			}
+		} else if (e.key === 'End') {
+			if (showSuggestions && suggestions.length > 0) {
+				activeIndex = suggestions.length - 1
+				e.preventDefault()
+			}
 		} else if (e.key === 'Enter') {
-			if (activeIndex >= 0 && suggestions[activeIndex]) {
+			if (showSuggestions && activeIndex >= 0 && suggestions[activeIndex]) {
+				e.preventDefault()
 				selectSuggestion(suggestions[activeIndex])
 			}
 		} else if (e.key === 'Escape') {
-			showSuggestions = false
+			if (showSuggestions) {
+				showSuggestions = false
+				activeIndex = -1
+				e.preventDefault()
+			}
 		}
 	}
 
@@ -59,6 +89,9 @@
 		query = item.station_descriptive_name
 		showSuggestions = false
 		suggestions = []
+		activeIndex = -1
+		// Move focus back to input (helps screen reader context)
+		inputRef?.focus()
 		onSelect(item.map_id)
 	}
 
@@ -67,11 +100,19 @@
 		suggestions = []
 		showSuggestions = false
 		activeIndex = -1
+		inputRef?.focus()
 	}
 </script>
 
 <div class="search-wrapper">
-	<div class="search-container relative">
+	<div
+		class="search-container relative"
+		bind:this={containerRef}
+		onmouseenter={updateDropdownPosition}
+		role="search"
+	>
+		<label for="search-input" id="search-label" class="sr-only">Search for CTA station</label>
+
 		<svg
 			class="search-icon pointer-events-none absolute left-4"
 			xmlns="http://www.w3.org/2000/svg"
@@ -87,7 +128,9 @@
 				d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z"
 			/>
 		</svg>
+
 		<input
+			id="search-input"
 			type="text"
 			bind:value={query}
 			oninput={handleInput}
@@ -98,10 +141,15 @@
 			aria-autocomplete="list"
 			aria-controls="suggestions-list"
 			aria-expanded={showSuggestions}
+			aria-labelledby="search-label"
+			aria-haspopup="listbox"
+			aria-activedescendant={activeIndex >= 0 && suggestions[activeIndex]
+				? `suggestion-${suggestions[activeIndex].map_id}`
+				: undefined}
 			role="combobox"
-			bind:this={containerRef}
-			onmouseenter={updateDropdownPosition}
+			bind:this={inputRef}
 		/>
+
 		{#if query.length > 0}
 			<button
 				type="button"
@@ -128,21 +176,24 @@
 			id="suggestions-list"
 			class="suggestions-list"
 			role="listbox"
+			aria-labelledby="search-label"
 			style="top: {suggestionsTop}px; left: {suggestionsLeft}px; width: {containerRef?.offsetWidth ||
 				'auto'}px"
 		>
 			{#each suggestions as suggestion, i (suggestion.map_id)}
 				<li
+					id={'suggestion-' + suggestion.map_id}
 					class="suggestion-item {i === activeIndex ? 'active' : ''}"
-					onclick={() => selectSuggestion(suggestion)}
+					onmousedown={() => selectSuggestion(suggestion)}
+					onmouseover={() => (activeIndex = i)}
+					onfocus={() => (activeIndex = i)}
 					role="option"
 					aria-selected={i === activeIndex}
 				>
 					<div class="flex w-full items-center justify-between">
 						<span>{suggestion.station_descriptive_name}</span>
-						<div class="flex gap-1">
+						<div class="flex gap-1" aria-hidden="true">
 							{#each suggestion.lines as line (line)}
-								{console.log(line)}
 								<div
 									class="h-3 w-3 rounded-full"
 									style="background-color: {LINES[line as LineKey].hex};"
@@ -155,9 +206,30 @@
 			{/each}
 		</ul>
 	{/if}
+
+	<!-- SR-only live region for announcement of suggestions -->
+	<div class="sr-only" role="status" aria-live="polite">
+		{#if showSuggestions}
+			{suggestions.length} {suggestions.length === 1 ? 'result' : 'results'} available
+		{:else if query.length > 0}
+			No results
+		{/if}
+	</div>
 </div>
 
 <style>
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
+	}
+
 	.search-wrapper {
 		position: relative;
 		width: 100%;
@@ -205,6 +277,7 @@
 
 	.glass-input:focus {
 		color: var(--input-text);
+		outline: 2px solid var(--accent);
 	}
 
 	.search-icon {
