@@ -18,7 +18,6 @@
 				viewBox="0 0 24 24"
 				stroke-width="1.5"
 				stroke="currentColor"
-				class="size-6"
 			>
 				<!-- refresh icon -->
 				<path
@@ -44,7 +43,6 @@
 				viewBox="0 0 24 24"
 				stroke-width="1.5"
 				stroke="currentColor"
-				class="size-6"
 			>
 				<path
 					stroke-linecap="round"
@@ -60,7 +58,6 @@
 				viewBox="0 0 24 24"
 				stroke-width="1.5"
 				stroke="currentColor"
-				class="size-6"
 			>
 				<path
 					stroke-linecap="round"
@@ -76,43 +73,43 @@
 	.btn-container {
 		display: inline-flex;
 		gap: 0.5rem;
-		align-items: center;
-	}
-
-	.favorite-btn,
-	.refresh-btn {
+		padding: 0.25rem;
 		align-items: center;
 		border-radius: 9999px;
-		cursor: pointer;
-		display: inline-flex;
-		gap: 0.75rem;
-		padding: 0.5rem 1rem;
-		transition: transform 0.15s ease;
 		background: var(--card-bg);
 		border: 1px solid var(--muted-border);
 		backdrop-filter: blur(12px) saturate(150%);
 		box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 	}
 
-	.favorite-btn:hover,
-	.refresh-btn:hover {
-		transform: scale(1.05);
+	button {
+		border-radius: 9999px;
+		align-items: center;
+		cursor: pointer;
+		display: inline-flex;
+		gap: 0.5rem;
+		padding: 0.5rem;
+		transition: transform 0.15s ease;
 	}
 
-	.favorite-btn:focus,
-	.refresh-btn:focus {
+	button:hover {
+		transform: scale(1.05);
+		background-color: var(--btn-hover-bg);
+	}
+
+	button:focus {
 		outline: none;
 		box-shadow:
 			0 0 0 2px var(--accent),
 			0 0 0 4px var(--accent);
+		background-color: var(--btn-hover-bg);
 	}
 
-	.favorite-btn:active,
-	.refresh-btn:active {
+	button:active {
 		transform: scale(0.95);
 	}
 
-	.size-6 {
+	svg {
 		width: 24px;
 		height: 24px;
 	}
