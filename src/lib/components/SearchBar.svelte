@@ -266,7 +266,10 @@
 		color: var(--input-text);
 		font-size: 1.125rem;
 		outline-offset: 2px;
-		transition: color 0.3s ease;
+		outline: 2px solid transparent;
+		transition:
+			color 0.3s ease,
+			outline 0.1s linear;
 	}
 
 	.glass-input::placeholder {

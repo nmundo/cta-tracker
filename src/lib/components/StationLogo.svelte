@@ -1,5 +1,4 @@
 <script lang="ts">
-	let buttonClicked = false
 	import { fly, fade } from 'svelte/transition'
 	import { LINES } from '../constants'
 
@@ -11,20 +10,12 @@
 </script>
 
 <div class="container" in:fly={{ x: 50, duration: 200 }} out:fade={{ duration: 100 }}>
-	<button
-		type="button"
-		onclick={() => {
-			buttonClicked = true
-			changeStation()
-			setTimeout(() => (buttonClicked = false), 200)
-		}}
-		class:clicked={buttonClicked}
-	>
+	<button type="button" onclick={changeStation}>
 		<div class="info">
 			<div class="letter">{staNm.charAt(0)}</div>
 		</div>
 		<div class="colors">
-			{#each lines as line}
+			{#each lines as line (line)}
 				<div class="color-bar" style="background-color: {LINES[line].hex};"></div>
 			{/each}
 		</div>
