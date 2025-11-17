@@ -28,7 +28,7 @@ Basic side project to get familiar with Svelte. Simple app for checking upcoming
 - [ ] Add animations
   - [ ] Refresh button
   - [ ] Favorites button
-  - [ ] Adding/deleting favorites
+  - [X] Adding/deleting favorites
   - [ ] loading
     - [ ] favorites
     - [ ] arrivals

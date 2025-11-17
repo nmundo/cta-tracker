@@ -8,6 +8,7 @@
 	import FullStationLogo from '$lib/components/FullStationLogo.svelte'
 	import { SvelteSet } from 'svelte/reactivity'
 	import Toolbar from '$lib/components/Toolbar.svelte'
+	import { flip } from 'svelte/animate'
 
 	const trainStations = await getStations()
 
@@ -88,13 +89,15 @@
 					<div class="overflow-x-auto" onscroll={handleScroll}>
 						<div class="favorites-container flex flex-nowrap space-x-3 p-2">
 							{#each favorites as { staId, staNm, lines } (staId)}
-								<StationLogo
-									{staNm}
-									{lines}
-									changeStation={() => {
-										mapId = staId
-									}}
-								/>
+								<div animate:flip={{ duration: 300 }}>
+									<StationLogo
+										{staNm}
+										{lines}
+										changeStation={() => {
+											mapId = staId
+										}}
+									/>
+								</div>
 							{/each}
 						</div>
 					</div>

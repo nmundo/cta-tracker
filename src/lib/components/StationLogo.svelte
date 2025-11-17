@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { fly, fade } from 'svelte/transition'
+	import { fly } from 'svelte/transition'
 	import { LINES } from '../constants'
 
 	const {
@@ -9,7 +9,7 @@
 	}: { staNm: string; lines: LineKey[]; changeStation: () => void } = $props()
 </script>
 
-<div class="container" in:fly={{ x: 50, duration: 200 }} out:fade={{ duration: 100 }}>
+<div class="container" in:fly={{ x: 50, duration: 200 }} out:fly={{ y: 70, duration: 200 }}>
 	<button type="button" onclick={changeStation}>
 		<div class="info">
 			<div class="letter">{staNm.charAt(0)}</div>
