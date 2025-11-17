@@ -12,6 +12,10 @@
 
 	const trainStations = await getStations()
 
+	$effect(() => {
+		$inspect(trainStations)
+	})
+
 	let mapId = $state('')
 	let trainData: TrainData | null = $state(null)
 	let favorites = $state<StationInfo[]>(

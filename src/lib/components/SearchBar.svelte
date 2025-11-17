@@ -191,7 +191,11 @@
 					aria-selected={i === activeIndex}
 				>
 					<div class="flex w-full items-center justify-between">
-						<span>{suggestion.station_descriptive_name}</span>
+						<div class="flex flex-col">
+							<span class="station-name">{suggestion.station_name}</span>
+							<span class="station-branches">{suggestion.branches}</span>
+						</div>
+
 						<div class="flex gap-1" aria-hidden="true">
 							{#each suggestion.lines as line (line)}
 								<div
@@ -351,6 +355,16 @@
 		color: var(--text);
 		box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.04);
 		border: 1px solid rgba(0, 0, 0, 0.15);
+	}
+
+	.station-name {
+		font-weight: 500;
+	}
+
+	.station-branches {
+		font-weight: 300;
+		font-size: 0.8rem;
+		opacity: 0.75;
 	}
 
 	@keyframes fadeIn {

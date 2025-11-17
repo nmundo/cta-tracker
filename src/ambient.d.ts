@@ -95,6 +95,7 @@ type StationStop = {
 	stop_name: string
 	station_name: string
 	station_descriptive_name: string
+	branches: string
 	map_id: string
 	ada: boolean
 	lines: Set<LineKey>

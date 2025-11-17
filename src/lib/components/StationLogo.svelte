@@ -7,12 +7,20 @@
 		lines,
 		changeStation
 	}: { staNm: string; lines: LineKey[]; changeStation: () => void } = $props()
+
+	// get the letter of station name, if the station name starts with a number, return that full number
+	const getStationLetter = () => {
+		const match = staNm.match(/^\d+/)
+		return match ? match[0] : staNm.charAt(0)
+	}
 </script>
 
 <div class="container" in:fly={{ x: 50, duration: 200 }} out:fly={{ y: 70, duration: 200 }}>
 	<button type="button" onclick={changeStation}>
 		<div class="info">
-			<div class="letter">{staNm.charAt(0)}</div>
+			<div class="letter">
+				{getStationLetter()}
+			</div>
 		</div>
 		<div class="colors">
 			{#each lines as line (line)}
