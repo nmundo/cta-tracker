@@ -1,7 +1,7 @@
 export const LINES: Record<LineKey, { name: string; hex: string }> = {
 	Red: { name: 'Red', hex: '#C60C30' },
 	Blue: { name: 'Blue', hex: '#00A1DE' },
-	Brn: { name: 'Brown', hex: '#662233' },
+	Brn: { name: 'Brown', hex: '#38160d' },
 	G: { name: 'Green', hex: '#009B3A' },
 	Org: { name: 'Orange', hex: '#F9461C' },
 	P: { name: 'Purple', hex: '#522398' },

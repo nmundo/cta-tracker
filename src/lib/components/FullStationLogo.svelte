@@ -2,6 +2,18 @@
 	import { LINES } from '$lib/constants'
 
 	const { staNm, lines }: { staNm: string; lines: LineKey[] } = $props()
+
+	let previousSta = staNm
+
+	$effect(() => {
+		if (staNm !== previousSta && document.startViewTransition) {
+			document.startViewTransition(() => {
+				previousSta = staNm
+			})
+		} else {
+			previousSta = staNm
+		}
+	})
 </script>
 
 <div class="container">
@@ -62,5 +74,35 @@
 
 	.color-bar:last-of-type {
 		border-bottom: 0;
+	}
+
+	::view-transition-old(station-logo) {
+		animation: fade-scale-out 250ms ease forwards;
+	}
+
+	::view-transition-new(station-logo) {
+		animation: fade-scale-in 250ms ease forwards;
+	}
+
+	@keyframes fade-scale-out {
+		from {
+			opacity: 1;
+			/*transform: scale(1);*/
+		}
+		to {
+			opacity: 0;
+			/*transform: scale(0.92);*/
+		}
+	}
+
+	@keyframes fade-scale-in {
+		from {
+			opacity: 0;
+			/*transform: scale(1.06);*/
+		}
+		to {
+			opacity: 1;
+			/*transform: scale(1);*/
+		}
 	}
 </style>

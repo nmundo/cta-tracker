@@ -29,6 +29,13 @@ export const getStations = query(async (): Promise<StationStop[]> => {
 	const getLineArray = (station: StationApiResponse) =>
 		colorMap.map((c) => (station[c.key] ? c.name : null)).filter(Boolean)
 
+	const getBranches = (station: StationApiResponse) => {
+		// Example station_descriptive_name: "Clark/Lake (Red, Blue, Brown, Green, Purple, Pink)"
+		const match = station.station_descriptive_name.match(/\(([^)]+)\)/)
+		console.log('match', match)
+		return match ? match[1] : null
+	}
+
 	const stationMap = new Map()
 
 	dummyData.forEach((station) => {
@@ -38,6 +45,7 @@ export const getStations = query(async (): Promise<StationStop[]> => {
 				map_id: station.map_id,
 				station_name: station.station_name,
 				station_descriptive_name: station.station_descriptive_name,
+				branches: getBranches(station),
 				latitude: station.location.latitude,
 				longitude: station.location.longitude,
 				ada: station.ada,
@@ -48,6 +56,5 @@ export const getStations = query(async (): Promise<StationStop[]> => {
 			existing.lines = new Set([...existing.lines, ...getLineArray(station)])
 		}
 	})
-
 	return Array.from(stationMap.values())
 })
