@@ -12,10 +12,6 @@
 
 	const trainStations = await getStations()
 
-	$effect(() => {
-		$inspect(trainStations)
-	})
-
 	let mapId = $state('')
 	let trainData: TrainData | null = $state(null)
 	let favorites = $state<StationInfo[]>(
@@ -107,14 +103,10 @@
 					</div>
 
 					{#if showLeftFade}
-						<div
-							class="pointer-events-none absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-white/80 to-transparent dark:from-gray-900/80"
-						></div>
+						<div class="left gradient" transition:fade={{ duration: 150 }}></div>
 					{/if}
 					{#if showRightFade}
-						<div
-							class="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-white/80 to-transparent dark:from-gray-900/80"
-						></div>
+						<div class="right gradient" transition:fade={{ duration: 150 }}></div>
 					{/if}
 				</div>
 			{/if}
@@ -135,7 +127,7 @@
 			{/if}
 		</div>
 
-		<div class="card bg-base-200 p-4 shadow-lg">
+		<div class="card p-4 shadow-lg">
 			<div class="mb-4 flex gap-3">
 				<div class="flex-grow">
 					<SearchBar
@@ -208,6 +200,31 @@
 	#favorites-card {
 		height: 152px;
 	}
+	.gradient {
+		pointer-events: none;
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		width: 4rem;
+	}
+	.left.gradient {
+		left: 0;
+		right: auto;
+		background: linear-gradient(
+			to right,
+			hsl(from var(--card-bg) h s l / 100%),
+			hsl(from var(--card-bg) h s l / 0%)
+		);
+	}
+	.right.gradient {
+		right: 0;
+		left: auto;
+		background: linear-gradient(
+			to left,
+			hsl(from var(--card-bg) h s l / 100%),
+			hsl(from var(--card-bg) h s l / 0%)
+		);
+	}
 	.header {
 		display: flex;
 		justify-content: space-between;
@@ -219,12 +236,14 @@
 		margin: 0;
 		padding: 0;
 		border-radius: 24px;
+		background-color: var(--list-bg);
 	}
 	.list-row {
 		display: flex;
 		gap: 1rem;
 		align-items: center;
 		padding: 0.75rem;
+		padding-right: 1.5rem;
 		border-bottom: 1px solid var(--muted-border);
 	}
 	.line-color {
