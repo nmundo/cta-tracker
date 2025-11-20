@@ -71,7 +71,6 @@
 	const calcTimeDelta = (arrivalTime: string) => {
 		const time = new Date(arrivalTime)
 		const mins = Math.round((time.getTime() - Date.now()) / 1000 / 60)
-
 		return mins
 	}
 </script>
