@@ -16,9 +16,9 @@ Basic side project to get familiar with Svelte. Simple app for checking upcoming
 - [x] Favorites
   - [X] Add favorites
   - [X] delete favorites
-- [ ] Split up station names into name and branch
+- [x] Split up station names into name and branch
 - [x] Add a way to delete favorites
-- [ ] Geolocation
+- [x] Geolocation
 - [ ] a11y
   - [ ] keyboard navigation
   - [X] search results
@@ -26,7 +26,7 @@ Basic side project to get familiar with Svelte. Simple app for checking upcoming
 - [x] Search for stations/autocomplete
 - [x] Add UI for managing favorites
 - [ ] Add animations
-  - [ ] Refresh button
+  - [x] Refresh button
   - [ ] Favorites button
   - [X] Adding/deleting favorites
   - [ ] loading
@@ -37,3 +37,4 @@ Basic side project to get familiar with Svelte. Simple app for checking upcoming
 #### Long Range
 - [ ] Bus stops
 - [ ] Reorder favorites
+- [ ] Service alerts
