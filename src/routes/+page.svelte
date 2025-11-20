@@ -18,7 +18,7 @@
 		browser && JSON.parse(localStorage.getItem('favorites') || '[]')
 	)
 	let isFavorite = $derived.by(() =>
-		trainData ? favorites.some((f) => f.staId === trainData.eta[0].staId) : false
+		trainData ? favorites.some((f) => f.staId === trainData!.eta[0].staId) : false
 	)
 	let loading = $state(false)
 
@@ -165,7 +165,7 @@
 								})
 							}}
 							toggleFav={() => {
-								const sta = trainData.eta[0]
+								const sta = trainData!.eta[0]
 								if (isFavorite) {
 									removeFavorite(sta.staId)
 								} else {
