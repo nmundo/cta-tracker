@@ -17,7 +17,7 @@
 	let favorites = $state<StationInfo[]>(
 		browser && JSON.parse(localStorage.getItem('favorites') || '[]')
 	)
-	let isFavorite = $derived.by(() =>
+	let isFavorite = $derived(() =>
 		trainData ? favorites.some((f) => f.staId === trainData.eta[0].staId) : false
 	)
 	let loading = $state(false)
@@ -71,13 +71,8 @@
 	const calcTimeDelta = (arrivalTime: string) => {
 		const time = new Date(arrivalTime)
 		const mins = Math.round((time.getTime() - Date.now()) / 1000 / 60)
-		return mins
-	}
 
-	const getCardinal = (deg: number) => {
-		if (deg == null || isNaN(deg)) return ''
-		const labels = ['North', 'East', 'South', 'West']
-		return labels[Math.round(deg / 90) % 4]
+		return mins
 	}
 </script>
 
@@ -126,7 +121,6 @@
 					class="text-xs text-gray-400"
 					title={new Date(trainData.tmst).toLocaleString()}
 					aria-label={`Last updated ${trainData.tmst}`}
-					in:fly={{ y: -10, duration: 200 }}
 				>
 					{`Updated ${new Date(trainData.tmst).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
 				</time>
@@ -155,7 +149,7 @@
 					<div class="header">
 						<FullStationLogo lines={getLines()} staNm={trainData.eta[0].staNm} />
 						<Toolbar
-							isFav={isFavorite}
+							isFav={isFavorite()}
 							{loading}
 							refresh={() => {
 								loading = true
@@ -166,7 +160,7 @@
 							}}
 							toggleFav={() => {
 								const sta = trainData.eta[0]
-								if (isFavorite) {
+								if (isFavorite()) {
 									removeFavorite(sta.staId)
 								} else {
 									addFavorite({
@@ -179,7 +173,7 @@
 						/>
 					</div>
 					<ul class="list">
-						{#each trainData.eta as { destNm, arrT, rt, rn, heading }, i (rn + rt + arrT)}
+						{#each trainData.eta as { destNm, arrT, rt, rn }, i (rn + rt + arrT)}
 							{@const timeDelta = calcTimeDelta(arrT)}
 							<li class="list-row" in:fly={{ y: 20, duration: 200, delay: i * 50 }} out:fade>
 								<div>
@@ -188,12 +182,6 @@
 								<div class="flex flex-grow items-center justify-between">
 									<div>
 										<div class="font-bold">{destNm}</div>
-										{#if heading !== null && false}
-											<!-- TODO: fix heading display -->
-											<div class="arrival-subtitle text-sm text-gray-500">
-												{getCardinal(heading)}bound
-											</div>
-										{/if}
 									</div>
 									<div class="text-right text-xl font-light">
 										{timeDelta <= 0 ? 'Now' : `${timeDelta} min`}
@@ -262,9 +250,5 @@
 		width: 40px;
 		height: 40px;
 		border-radius: 12px;
-	}
-	.arrival-subtitle {
-		opacity: 0.7;
-		margin-top: 0.15rem;
 	}
 </style>

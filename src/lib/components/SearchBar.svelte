@@ -42,56 +42,46 @@
 	}
 
 	const handleKeydown = (e: KeyboardEvent) => {
-		if (!showSuggestions && e.key === 'ArrowDown' && suggestions.length > 0) {
-			showSuggestions = true
-			activeIndex = 0
-			e.preventDefault()
-			updateDropdownPosition()
-			return
-		}
-
-		const actions: Record<string, () => void> = {
-			ArrowDown: () => {
-				if (showSuggestions && suggestions.length > 0) {
-					activeIndex = (activeIndex + 1) % suggestions.length
-					e.preventDefault()
-				}
-			},
-			ArrowUp: () => {
-				if (showSuggestions && suggestions.length > 0) {
-					activeIndex = (activeIndex - 1 + suggestions.length) % suggestions.length
-					e.preventDefault()
-				}
-			},
-			Home: () => {
-				if (showSuggestions && suggestions.length > 0) {
-					activeIndex = 0
-					e.preventDefault()
-				}
-			},
-			End: () => {
-				if (showSuggestions && suggestions.length > 0) {
-					activeIndex = suggestions.length - 1
-					e.preventDefault()
-				}
-			},
-			Enter: () => {
-				if (showSuggestions && activeIndex >= 0 && suggestions[activeIndex]) {
-					e.preventDefault()
-					selectSuggestion(suggestions[activeIndex])
-				}
-			},
-			Escape: () => {
-				if (showSuggestions) {
-					showSuggestions = false
-					activeIndex = -1
-					e.preventDefault()
-				}
+		// Keep focus on input and use aria-activedescendant to announce the active option.
+		// Open suggestions when ArrowDown pressed.
+		if (e.key === 'ArrowDown') {
+			if (!showSuggestions && suggestions.length > 0) {
+				showSuggestions = true
+				activeIndex = 0
+				e.preventDefault()
+				updateDropdownPosition()
+				return
 			}
-		}
-
-		if (actions[e.key]) {
-			actions[e.key]()
+			if (showSuggestions && suggestions.length > 0) {
+				activeIndex = (activeIndex + 1 + suggestions.length) % suggestions.length
+				e.preventDefault()
+			}
+		} else if (e.key === 'ArrowUp') {
+			if (showSuggestions && suggestions.length > 0) {
+				activeIndex = (activeIndex - 1 + suggestions.length) % suggestions.length
+				e.preventDefault()
+			}
+		} else if (e.key === 'Home') {
+			if (showSuggestions && suggestions.length > 0) {
+				activeIndex = 0
+				e.preventDefault()
+			}
+		} else if (e.key === 'End') {
+			if (showSuggestions && suggestions.length > 0) {
+				activeIndex = suggestions.length - 1
+				e.preventDefault()
+			}
+		} else if (e.key === 'Enter') {
+			if (showSuggestions && activeIndex >= 0 && suggestions[activeIndex]) {
+				e.preventDefault()
+				selectSuggestion(suggestions[activeIndex])
+			}
+		} else if (e.key === 'Escape') {
+			if (showSuggestions) {
+				showSuggestions = false
+				activeIndex = -1
+				e.preventDefault()
+			}
 		}
 	}
 
@@ -112,51 +102,9 @@
 		activeIndex = -1
 		inputRef?.focus()
 	}
-
-	const getNearestStation = (lat: number, lon: number) => {
-		let nearest = null
-		let nearestDist = Infinity
-
-		for (const st of data) {
-			if (!st.latitude || !st.longitude) continue
-			const dLat = ((st.latitude - lat) * Math.PI) / 180
-			const dLon = ((st.longitude - lon) * Math.PI) / 180
-			const a =
-				Math.sin(dLat / 2) ** 2 +
-				Math.cos((lat * Math.PI) / 180) *
-					Math.cos((st.latitude * Math.PI) / 180) *
-					Math.sin(dLon / 2) ** 2
-			const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-			const dist = 6371 * c // km
-
-			if (dist < nearestDist) {
-				nearestDist = dist
-				nearest = st
-			}
-		}
-		return nearest
-	}
-
-	const locateUser = () => {
-		if (!navigator.geolocation) {
-			alert('Geolocation not supported.')
-			return
-		}
-
-		navigator.geolocation.getCurrentPosition(
-			(pos) => {
-				const { latitude, longitude } = pos.coords
-				const nearest = getNearestStation(latitude, longitude)
-				if (nearest) {
-					selectSuggestion(nearest)
-				}
-			},
-			() => alert('Unable to retrieve your location.')
-		)
-	}
 </script>
 
-<div class="search-wrapper flex items-center gap-3">
+<div class="search-wrapper">
 	<div
 		class="search-container relative"
 		bind:this={containerRef}
@@ -221,35 +169,6 @@
 				</svg>
 			</button>
 		{/if}
-	</div>
-	<div class="btn-container">
-		<button
-			class="location-btn"
-			onclick={locateUser}
-			type="button"
-			aria-label="Use my location to find the nearest station"
-			title="Use my location"
-		>
-			<svg
-				xmlns="http://www.w3.org/2000/svg"
-				fill="none"
-				viewBox="0 0 24 24"
-				stroke-width="1.5"
-				stroke="currentColor"
-				class="size-6"
-			>
-				<path
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-				/>
-				<path
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"
-				/>
-			</svg>
-		</button>
 	</div>
 
 	{#if showSuggestions}
@@ -324,7 +243,7 @@
 		width: 100%;
 		max-width: 600px;
 		position: relative;
-		background: var(--card-bg);
+		background: var(--search-bg);
 		border-radius: 24px;
 		box-shadow:
 			inset 0 0 8px rgba(255 255 255 / 0.1),
@@ -457,49 +376,5 @@
 			opacity: 1;
 			transform: translateY(0);
 		}
-	}
-
-	.btn-container {
-		display: inline-flex;
-		gap: 0.5rem;
-		padding: 0.3rem;
-		align-items: center;
-		border-radius: 9999px;
-		background: var(--card-bg);
-		border: 1px solid var(--muted-border);
-		backdrop-filter: blur(12px) saturate(150%);
-		box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-	}
-
-	.location-btn {
-		border-radius: 9999px;
-		align-items: center;
-		cursor: pointer;
-		display: inline-flex;
-		gap: 0.5rem;
-		padding: 0.5rem;
-		transition: transform 0.15s ease;
-	}
-
-	.location-btn:hover {
-		transform: scale(1.05);
-		background-color: var(--btn-hover-bg);
-	}
-
-	.location-btn:focus {
-		outline: none;
-		box-shadow:
-			0 0 0 2px var(--accent),
-			0 0 0 4px var(--accent);
-		background-color: var(--btn-hover-bg);
-	}
-
-	.location-btn:active {
-		transform: scale(0.95);
-	}
-
-	.location-btn svg {
-		width: 24px;
-		height: 24px;
 	}
 </style>

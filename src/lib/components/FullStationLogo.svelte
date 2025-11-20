@@ -5,15 +5,15 @@
 
 	let previousSta = staNm
 
-	// $effect(() => {
-	// 	if (staNm !== previousSta && document.startViewTransition) {
-	// 		document.startViewTransition(() => {
-	// 			previousSta = staNm
-	// 		})
-	// 	} else {
-	// 		previousSta = staNm
-	// 	}
-	// })
+	$effect(() => {
+		if (staNm !== previousSta && document.startViewTransition) {
+			document.startViewTransition(() => {
+				previousSta = staNm
+			})
+		} else {
+			previousSta = staNm
+		}
+	})
 </script>
 
 <div class="container">

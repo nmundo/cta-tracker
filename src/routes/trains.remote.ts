@@ -46,8 +46,8 @@ export const getStations = query(async (): Promise<StationStop[]> => {
 				station_name: station.station_name,
 				station_descriptive_name: station.station_descriptive_name,
 				branches: getBranches(station),
-				latitude: Number(station.location.latitude),
-				longitude: Number(station.location.longitude),
+				latitude: station.location.latitude,
+				longitude: station.location.longitude,
 				ada: station.ada,
 				lines: new Set(getLineArray(station))
 			})

@@ -37,4 +37,3 @@ Basic side project to get familiar with Svelte. Simple app for checking upcoming
 #### Long Range
 - [ ] Bus stops
 - [ ] Reorder favorites
-- [ ] Service alerts

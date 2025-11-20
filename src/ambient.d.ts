@@ -99,6 +99,5 @@ type StationStop = {
 	map_id: string
 	ada: boolean
 	lines: Set<LineKey>
-	latitude: number
-	longitude: number
+	location: StationLocation
 }
