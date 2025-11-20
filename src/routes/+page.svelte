@@ -17,7 +17,7 @@
 	let favorites = $state<StationInfo[]>(
 		browser && JSON.parse(localStorage.getItem('favorites') || '[]')
 	)
-	let isFavorite = $derived(() =>
+	let isFavorite = $derived.by(() =>
 		trainData ? favorites.some((f) => f.staId === trainData.eta[0].staId) : false
 	)
 	let loading = $state(false)
@@ -149,7 +149,7 @@
 					<div class="header">
 						<FullStationLogo lines={getLines()} staNm={trainData.eta[0].staNm} />
 						<Toolbar
-							isFav={isFavorite()}
+							isFav={isFavorite}
 							{loading}
 							refresh={() => {
 								loading = true
@@ -160,7 +160,7 @@
 							}}
 							toggleFav={() => {
 								const sta = trainData.eta[0]
-								if (isFavorite()) {
+								if (isFavorite) {
 									removeFavorite(sta.staId)
 								} else {
 									addFavorite({

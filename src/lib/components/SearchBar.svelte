@@ -42,46 +42,56 @@
 	}
 
 	const handleKeydown = (e: KeyboardEvent) => {
-		// Keep focus on input and use aria-activedescendant to announce the active option.
-		// Open suggestions when ArrowDown pressed.
-		if (e.key === 'ArrowDown') {
-			if (!showSuggestions && suggestions.length > 0) {
-				showSuggestions = true
-				activeIndex = 0
-				e.preventDefault()
-				updateDropdownPosition()
-				return
+		if (!showSuggestions && e.key === 'ArrowDown' && suggestions.length > 0) {
+			showSuggestions = true
+			activeIndex = 0
+			e.preventDefault()
+			updateDropdownPosition()
+			return
+		}
+
+		const actions: Record<string, () => void> = {
+			ArrowDown: () => {
+				if (showSuggestions && suggestions.length > 0) {
+					activeIndex = (activeIndex + 1) % suggestions.length
+					e.preventDefault()
+				}
+			},
+			ArrowUp: () => {
+				if (showSuggestions && suggestions.length > 0) {
+					activeIndex = (activeIndex - 1 + suggestions.length) % suggestions.length
+					e.preventDefault()
+				}
+			},
+			Home: () => {
+				if (showSuggestions && suggestions.length > 0) {
+					activeIndex = 0
+					e.preventDefault()
+				}
+			},
+			End: () => {
+				if (showSuggestions && suggestions.length > 0) {
+					activeIndex = suggestions.length - 1
+					e.preventDefault()
+				}
+			},
+			Enter: () => {
+				if (showSuggestions && activeIndex >= 0 && suggestions[activeIndex]) {
+					e.preventDefault()
+					selectSuggestion(suggestions[activeIndex])
+				}
+			},
+			Escape: () => {
+				if (showSuggestions) {
+					showSuggestions = false
+					activeIndex = -1
+					e.preventDefault()
+				}
 			}
-			if (showSuggestions && suggestions.length > 0) {
-				activeIndex = (activeIndex + 1 + suggestions.length) % suggestions.length
-				e.preventDefault()
-			}
-		} else if (e.key === 'ArrowUp') {
-			if (showSuggestions && suggestions.length > 0) {
-				activeIndex = (activeIndex - 1 + suggestions.length) % suggestions.length
-				e.preventDefault()
-			}
-		} else if (e.key === 'Home') {
-			if (showSuggestions && suggestions.length > 0) {
-				activeIndex = 0
-				e.preventDefault()
-			}
-		} else if (e.key === 'End') {
-			if (showSuggestions && suggestions.length > 0) {
-				activeIndex = suggestions.length - 1
-				e.preventDefault()
-			}
-		} else if (e.key === 'Enter') {
-			if (showSuggestions && activeIndex >= 0 && suggestions[activeIndex]) {
-				e.preventDefault()
-				selectSuggestion(suggestions[activeIndex])
-			}
-		} else if (e.key === 'Escape') {
-			if (showSuggestions) {
-				showSuggestions = false
-				activeIndex = -1
-				e.preventDefault()
-			}
+		}
+
+		if (actions[e.key]) {
+			actions[e.key]()
 		}
 	}
 
