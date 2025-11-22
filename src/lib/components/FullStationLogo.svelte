@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { fly } from 'svelte/transition'
 	import { LINES } from '$lib/constants'
 
 	const { staNm, lines }: { staNm: string; lines: LineKey[] } = $props()
@@ -16,7 +17,7 @@
 	// })
 </script>
 
-<div class="container">
+<div class="container" in:fly={{ y: -15, duration: 200, delay: 120 }}>
 	<div class="info">
 		<div class="name">{staNm}</div>
 	</div>
@@ -41,12 +42,14 @@
 	.info {
 		background-color: var(--station-info-bg);
 		padding: 10px 20px;
-		width: calc(100% - 60px);
+		/* width: calc(100% - 60px); */
+		flex: 1 1 auto;
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
 		color: var(--station-letter-color);
+		transition: width 300ms ease;
 	}
 	.name {
 		font-size: 20px;
@@ -60,6 +63,7 @@
 		border: 1px solid var(--color-bar-border);
 		border-left: 2px solid var(--color-bar-border);
 		border-right: 0;
+		animation: growbars 250ms ease-out forwards;
 	}
 
 	.colors {
@@ -103,6 +107,17 @@
 		to {
 			opacity: 1;
 			/*transform: scale(1);*/
+		}
+	}
+
+	@keyframes growbars {
+		from {
+			height: 0;
+			opacity: 0;
+		}
+		to {
+			height: 100%;
+			opacity: 1;
 		}
 	}
 </style>

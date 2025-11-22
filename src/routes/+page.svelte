@@ -5,6 +5,7 @@
 	import StationLogo from '$lib/components/StationLogo.svelte'
 	import SearchBar from '$lib/components/SearchBar.svelte'
 	import { fade, fly } from 'svelte/transition'
+	import { backOut, cubicOut } from 'svelte/easing'
 	import FullStationLogo from '$lib/components/FullStationLogo.svelte'
 	import { SvelteSet } from 'svelte/reactivity'
 	import Toolbar from '$lib/components/Toolbar.svelte'
@@ -145,15 +146,17 @@
 				</div>
 			</div>
 
-			{#if !trainData}
-				<div class="text-center text-gray-500 italic">Enter a station to see arrival times.</div>
-			{/if}
 			{#if trainData}
 				{#if trainData.errNm}
 					<div class="text-error">Error: {trainData.errNm}</div>
 				{:else}
-					<div class="header">
-						<FullStationLogo lines={getLines()} staNm={trainData.eta[0].staNm} />
+					<div class="header" transition:fly|global={{ y: -25, duration: 450, easing: backOut }}>
+						<span
+							in:fly={{ x: 40, duration: 350, easing: backOut }}
+							out:fly={{ x: -40, duration: 200, easing: cubicOut }}
+						>
+							<FullStationLogo lines={getLines()} staNm={trainData.eta[0].staNm} />
+						</span>
 						<Toolbar
 							isFav={isFavorite}
 							{loading}
@@ -178,7 +181,7 @@
 							}}
 						/>
 					</div>
-					<ul class="list">
+					<ul class="list" in:fly|global={{ y: -25, duration: 450, delay: 100, easing: backOut }}>
 						{#each trainData.eta as { destNm, arrT, rt, rn, heading }, i (rn + rt + arrT)}
 							{@const timeDelta = calcTimeDelta(arrT)}
 							<li class="list-row" in:fly={{ y: 20, duration: 200, delay: i * 50 }} out:fade>
@@ -203,6 +206,8 @@
 						{/each}
 					</ul>
 				{/if}
+			{:else}
+				<div class="text-center text-gray-500 italic">Enter a station to see arrival times.</div>
 			{/if}
 		</div>
 	</section>

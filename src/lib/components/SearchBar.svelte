@@ -277,7 +277,7 @@
 							<span class="station-branches">{suggestion.branches}</span>
 						</div>
 
-						<div class="flex gap-1" aria-hidden="true">
+						<div class="line-colors flex gap-1" aria-hidden="true">
 							{#each suggestion.lines as line (line)}
 								<div
 									class="h-3 w-3 rounded-full"
@@ -327,19 +327,19 @@
 		background: var(--card-bg);
 		border-radius: 24px;
 		box-shadow:
-			inset 0 0 8px rgba(255 255 255 / 0.1),
+			inset 0 0 8px rgba(255 255 255 / 0.05),
 			0 4px 20px rgba(0 0 0 / 0.15);
 		backdrop-filter: blur(14px);
 		transition:
 			transform 0.3s ease,
 			box-shadow 0.3s ease;
 		z-index: 1;
-	}
 
-	.search-container:focus-within {
-		box-shadow:
-			inset 0 0 12px rgba(255 255 255 / 0.2),
-			0 4px 20px rgba(0 0 0 / 0.15);
+		&:focus-within {
+			box-shadow:
+				inset 0 0 12px rgba(255 255 255 / 0.1),
+				0 4px 20px rgba(0 0 0 / 0.15);
+		}
 	}
 
 	.glass-input {
@@ -428,14 +428,14 @@
 		color: var(--text);
 		font-weight: 500;
 		border: 1px solid rgba(0, 0, 0, 0);
-	}
 
-	.suggestion-item:hover,
-	.suggestion-item.active {
-		background-color: rgba(200, 200, 200, 0.3);
-		color: var(--text);
-		box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.04);
-		border: 1px solid rgba(0, 0, 0, 0.15);
+		&:hover,
+		&.active {
+			background-color: rgba(200, 200, 200, 0.3);
+			color: var(--text);
+			box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.04);
+			border: 1px solid rgba(0, 0, 0, 0.15);
+		}
 	}
 
 	.station-name {
@@ -459,6 +459,16 @@
 		}
 	}
 
+	.line-colors {
+		background: var(--glass-bg);
+		backdrop-filter: blur(16px);
+		border: 1px solid var(--muted-border);
+		padding: 0.1rem;
+		border-radius: 1rem;
+		display: flex;
+		gap: 0.25rem;
+	}
+
 	.btn-container {
 		display: inline-flex;
 		gap: 0.5rem;
@@ -479,27 +489,27 @@
 		gap: 0.5rem;
 		padding: 0.5rem;
 		transition: transform 0.15s ease;
-	}
 
-	.location-btn:hover {
-		transform: scale(1.05);
-		background-color: var(--btn-hover-bg);
-	}
+		&:hover {
+			transform: scale(1.05);
+			background-color: var(--btn-hover-bg);
+		}
 
-	.location-btn:focus {
-		outline: none;
-		box-shadow:
-			0 0 0 2px var(--accent),
-			0 0 0 4px var(--accent);
-		background-color: var(--btn-hover-bg);
-	}
+		&:focus {
+			outline: none;
+			box-shadow:
+				0 0 0 2px var(--accent),
+				0 0 0 4px var(--accent);
+			background-color: var(--btn-hover-bg);
+		}
 
-	.location-btn:active {
-		transform: scale(0.95);
-	}
+		&:active {
+			transform: scale(0.95);
+		}
 
-	.location-btn svg {
-		width: 24px;
-		height: 24px;
+		svg {
+			width: 24px;
+			height: 24px;
+		}
 	}
 </style>
