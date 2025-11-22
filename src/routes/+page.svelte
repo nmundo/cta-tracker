@@ -24,7 +24,8 @@
 	let loading = $state(false)
 
 	let showLeftFade = $state(false)
-	let showRightFade = $state(true)
+	let showRightFade = $state(false)
+	let favScroll: HTMLElement | null = $state(null)
 
 	// Left/right fade for favorites scroll
 	const handleScroll = (e: Event) => {
@@ -36,6 +37,14 @@
 
 	$effect(() => {
 		localStorage.setItem('favorites', JSON.stringify(favorites))
+	})
+
+	$effect.pre(() => {
+		if (favScroll) {
+			const maxScroll = favScroll.scrollWidth - favScroll.clientWidth
+			showLeftFade = favScroll.scrollLeft > 0
+			showRightFade = favScroll.scrollLeft < maxScroll - 1
+		}
 	})
 
 	$effect(() => {
@@ -92,7 +101,7 @@
 				</div>
 			{:else}
 				<div class="relative">
-					<div class="overflow-x-auto" onscroll={handleScroll}>
+					<div class="overflow-x-auto" bind:this={favScroll} onscroll={handleScroll}>
 						<div class="favorites-container flex flex-nowrap space-x-3 p-2">
 							{#each favorites as { staId, staNm, lines } (staId)}
 								<div animate:flip={{ duration: 300 }}>
