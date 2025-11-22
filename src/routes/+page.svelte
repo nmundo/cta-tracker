@@ -5,6 +5,7 @@
 	import StationLogo from '$lib/components/StationLogo.svelte'
 	import SearchBar from '$lib/components/SearchBar.svelte'
 	import { fade, fly } from 'svelte/transition'
+	import { backOut, cubicOut } from 'svelte/easing'
 	import FullStationLogo from '$lib/components/FullStationLogo.svelte'
 	import { SvelteSet } from 'svelte/reactivity'
 	import Toolbar from '$lib/components/Toolbar.svelte'
@@ -18,12 +19,13 @@
 		browser && JSON.parse(localStorage.getItem('favorites') || '[]')
 	)
 	let isFavorite = $derived.by(() =>
-		trainData ? favorites.some((f) => f.staId === trainData.eta[0].staId) : false
+		trainData ? favorites.some((f) => f.staId === trainData!.eta[0].staId) : false
 	)
 	let loading = $state(false)
 
 	let showLeftFade = $state(false)
-	let showRightFade = $state(true)
+	let showRightFade = $state(false)
+	let favScroll: HTMLElement | null = $state(null)
 
 	// Left/right fade for favorites scroll
 	const handleScroll = (e: Event) => {
@@ -35,6 +37,14 @@
 
 	$effect(() => {
 		localStorage.setItem('favorites', JSON.stringify(favorites))
+	})
+
+	$effect.pre(() => {
+		if (favScroll) {
+			const maxScroll = favScroll.scrollWidth - favScroll.clientWidth
+			showLeftFade = favScroll.scrollLeft > 0
+			showRightFade = favScroll.scrollLeft < maxScroll - 1
+		}
 	})
 
 	$effect(() => {
@@ -91,7 +101,7 @@
 				</div>
 			{:else}
 				<div class="relative">
-					<div class="overflow-x-auto" onscroll={handleScroll}>
+					<div class="overflow-x-auto" bind:this={favScroll} onscroll={handleScroll}>
 						<div class="favorites-container flex flex-nowrap space-x-3 p-2">
 							{#each favorites as { staId, staNm, lines } (staId)}
 								<div animate:flip={{ duration: 300 }}>
@@ -145,15 +155,17 @@
 				</div>
 			</div>
 
-			{#if !trainData}
-				<div class="text-center text-gray-500 italic">Enter a station to see arrival times.</div>
-			{/if}
 			{#if trainData}
 				{#if trainData.errNm}
 					<div class="text-error">Error: {trainData.errNm}</div>
 				{:else}
-					<div class="header">
-						<FullStationLogo lines={getLines()} staNm={trainData.eta[0].staNm} />
+					<div class="header" transition:fly|global={{ y: -25, duration: 450, easing: backOut }}>
+						<span
+							in:fly={{ x: 40, duration: 350, easing: backOut }}
+							out:fly={{ x: -40, duration: 200, easing: cubicOut }}
+						>
+							<FullStationLogo lines={getLines()} staNm={trainData.eta[0].staNm} />
+						</span>
 						<Toolbar
 							isFav={isFavorite}
 							{loading}
@@ -165,7 +177,7 @@
 								})
 							}}
 							toggleFav={() => {
-								const sta = trainData.eta[0]
+								const sta = trainData!.eta[0]
 								if (isFavorite) {
 									removeFavorite(sta.staId)
 								} else {
@@ -178,7 +190,7 @@
 							}}
 						/>
 					</div>
-					<ul class="list">
+					<ul class="list" in:fly|global={{ y: -25, duration: 450, delay: 100, easing: backOut }}>
 						{#each trainData.eta as { destNm, arrT, rt, rn, heading }, i (rn + rt + arrT)}
 							{@const timeDelta = calcTimeDelta(arrT)}
 							<li class="list-row" in:fly={{ y: 20, duration: 200, delay: i * 50 }} out:fade>
@@ -203,6 +215,8 @@
 						{/each}
 					</ul>
 				{/if}
+			{:else}
+				<div class="text-center text-gray-500 italic">Enter a station to see arrival times.</div>
 			{/if}
 		</div>
 	</section>

@@ -9,7 +9,7 @@
 	}>()
 </script>
 
-<div class="btn-container">
+<div id="container">
 	<button type="button" class="refresh-btn" title="Refresh" onclick={refresh}>
 		<Spinner spin={loading}>
 			<svg
@@ -70,7 +70,7 @@
 </div>
 
 <style>
-	.btn-container {
+	#container {
 		display: inline-flex;
 		gap: 0.5rem;
 		padding: 0.25rem;
@@ -90,36 +90,27 @@
 		gap: 0.5rem;
 		padding: 0.5rem;
 		transition: transform 0.15s ease;
-	}
 
-	button:hover {
-		transform: scale(1.05);
-		background-color: var(--btn-hover-bg);
-	}
-
-	button:focus {
-		outline: none;
-		box-shadow:
-			0 0 0 2px var(--accent),
-			0 0 0 4px var(--accent);
-		background-color: var(--btn-hover-bg);
-	}
-
-	button:active {
-		transform: scale(0.95);
-	}
-
-	svg {
-		width: 24px;
-		height: 24px;
-	}
-
-	@keyframes rotate {
-		from {
-			transform: rotate(0deg);
+		&:hover {
+			transform: scale(1.05);
+			background-color: var(--btn-hover-bg);
 		}
-		to {
-			transform: rotate(360deg);
+
+		&:focus {
+			outline: none;
+			box-shadow:
+				0 0 0 2px var(--accent),
+				0 0 0 4px var(--accent);
+			background-color: var(--btn-hover-bg);
+		}
+
+		&:active {
+			transform: scale(0.95);
+		}
+
+		svg {
+			width: 24px;
+			height: 24px;
 		}
 	}
 </style>

@@ -32,7 +32,6 @@ export const getStations = query(async (): Promise<StationStop[]> => {
 	const getBranches = (station: StationApiResponse) => {
 		// Example station_descriptive_name: "Clark/Lake (Red, Blue, Brown, Green, Purple, Pink)"
 		const match = station.station_descriptive_name.match(/\(([^)]+)\)/)
-		console.log('match', match)
 		return match ? match[1] : null
 	}
 
