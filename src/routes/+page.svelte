@@ -143,7 +143,7 @@
 			{/if}
 		</div>
 
-		<div class="card p-4 shadow-lg">
+		<div class="arrivals-container card p-4 shadow-lg">
 			<div class="mb-4 flex gap-3">
 				<div class="flex-grow">
 					<SearchBar
@@ -226,6 +226,15 @@
 	#favorites-card {
 		height: 152px;
 	}
+	.container {
+		display: grid;
+		grid-template-columns: 400px 1fr;
+		gap: 30px;
+		@media (max-width: 768px) {
+			grid-template-columns: 1fr;
+			grid-template-rows: auto;
+		}
+	}
 	.gradient {
 		pointer-events: none;
 		position: absolute;
@@ -250,6 +259,9 @@
 			hsl(from var(--card-bg) h s l / 100%),
 			hsl(from var(--card-bg) h s l / 0%)
 		);
+	}
+	.arrivals-container {
+		min-height: 300px;
 	}
 	.header {
 		display: flex;
