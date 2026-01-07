@@ -233,6 +233,7 @@
 		@media (max-width: 768px) {
 			grid-template-columns: 1fr;
 			grid-template-rows: auto;
+			gap: 0;
 		}
 	}
 	.gradient {
@@ -261,7 +262,7 @@
 		);
 	}
 	.arrivals-container {
-		min-height: 300px;
+		min-height: 152px;
 	}
 	.header {
 		display: flex;
