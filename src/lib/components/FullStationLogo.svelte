@@ -63,7 +63,7 @@
 		border: 1px solid var(--color-bar-border);
 		border-left: 2px solid var(--color-bar-border);
 		border-right: 0;
-		animation: growbars 400ms ease-out forwards;
+		animation: growbars 250ms ease-out forwards;
 	}
 
 	.colors {
