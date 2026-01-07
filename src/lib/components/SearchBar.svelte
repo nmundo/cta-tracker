@@ -318,6 +318,7 @@
 	.search-wrapper {
 		position: relative;
 		width: 100%;
+		justify-content: center;
 	}
 
 	.search-container {
