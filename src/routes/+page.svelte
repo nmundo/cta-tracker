@@ -230,10 +230,17 @@
 		display: grid;
 		grid-template-columns: 400px 1fr;
 		gap: 30px;
+		min-width: 0;
+		section {
+			min-width: 0;
+		}
 		@media (max-width: 768px) {
-			grid-template-columns: 1fr;
+			grid-template-columns: minmax(0, 1fr);
 			grid-template-rows: auto;
 			gap: 0;
+			width: 100%;
+			max-width: 100%;
+			overflow-x: hidden;
 		}
 	}
 	.gradient {
