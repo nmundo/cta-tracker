@@ -15,11 +15,12 @@
 
 	let mapId = $state('')
 	let trainData: TrainData | null = $state(null)
+	let errorMsg: string | null = $state(null)
 	let favorites = $state<StationInfo[]>(
 		browser && JSON.parse(localStorage.getItem('favorites') || '[]')
 	)
 	let isFavorite = $derived.by(() =>
-		trainData ? favorites.some((f) => f.staId === trainData!.eta[0].staId) : false
+		trainData?.eta?.[0] ? favorites.some((f) => f.staId === trainData!.eta[0].staId) : false
 	)
 	let loading = $state(false)
 
@@ -47,13 +48,22 @@
 		}
 	})
 
+	const loadTrains = async (id: string) => {
+		loading = true
+		errorMsg = null
+		try {
+			trainData = await getTrainTimes(id)
+		} catch {
+			trainData = null
+			errorMsg = 'Could not load arrivals. Please try again.'
+		} finally {
+			loading = false
+		}
+	}
+
 	$effect(() => {
 		if (mapId) {
-			loading = true
-			getTrainTimes(mapId).then((data) => {
-				trainData = data
-				loading = false
-			})
+			loadTrains(mapId)
 		}
 	})
 
@@ -155,9 +165,13 @@
 				</div>
 			</div>
 
-			{#if trainData}
+			{#if errorMsg}
+				<div class="text-error">{errorMsg}</div>
+			{:else if trainData}
 				{#if trainData.errNm}
 					<div class="text-error">Error: {trainData.errNm}</div>
+				{:else if !trainData.eta?.length}
+					<div class="text-center text-gray-500 italic">No upcoming trains at this station.</div>
 				{:else}
 					<div class="header" transition:fly|global={{ y: -25, duration: 450, easing: backOut }}>
 						<span
@@ -169,13 +183,7 @@
 						<Toolbar
 							isFav={isFavorite}
 							{loading}
-							refresh={() => {
-								loading = true
-								getTrainTimes(mapId).then((data) => {
-									trainData = data
-									loading = false
-								})
-							}}
+							refresh={() => loadTrains(mapId)}
 							toggleFav={() => {
 								const sta = trainData!.eta[0]
 								if (isFavorite) {
@@ -203,7 +211,7 @@
 										{#if heading !== null && false}
 											<!-- TODO: fix heading display -->
 											<div class="arrival-subtitle text-sm text-gray-500">
-												{getCardinal(heading)}bound
+												{getCardinal(Number(heading))}bound
 											</div>
 										{/if}
 									</div>

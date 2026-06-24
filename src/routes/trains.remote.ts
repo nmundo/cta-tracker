@@ -1,4 +1,5 @@
 import { query } from '$app/server'
+import { error } from '@sveltejs/kit'
 import { TRAIN_API_KEY } from '$env/static/private'
 import dummyData from '../dummyData'
 
@@ -15,9 +16,19 @@ const colorMap = [
 ]
 
 export const getTrainTimes = query('unchecked', async (mapId: string) => {
+	// CTA map_ids are 5-digit numeric station ids; reject anything else before
+	// interpolating into the upstream URL.
+	if (typeof mapId !== 'string' || !/^\d{5}$/.test(mapId)) {
+		error(400, 'Invalid station id')
+	}
+
 	const response = await fetch(
-		`https://lapi.transitchicago.com/api/1.0/ttarrivals.aspx?key=${TRAIN_API_KEY}&mapid=${mapId}&outputType=JSON`
+		`https://lapi.transitchicago.com/api/1.0/ttarrivals.aspx?key=${TRAIN_API_KEY}&mapid=${encodeURIComponent(mapId)}&outputType=JSON`
 	)
+
+	if (!response.ok) {
+		error(502, 'CTA arrivals API request failed')
+	}
 
 	const data: TrainTrackerResponse = await response.json()
 	return data.ctatt
